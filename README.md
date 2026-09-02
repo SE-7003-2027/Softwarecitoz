@@ -16,10 +16,13 @@ los usuarios podrán encontrar contactos para partidas de juegos cooperativos.
 * Se hará uso de pruebas integras con diversidad de datos para verificar que el sistema controle errores.
 
 ## Recursos
-* (lenguaje de programacion):
-* (API's):
-* (Base de datos):
-* 
+* Lenguaje de programación principal: Python.
+* Base de datos: MySQL (Para el almacenamiento de los perfiles de los usuarios).
+* API's: Las funcionalidades de las API's que se podrían utilizar para recuperar la información de los usuarios de steam y juegos:
+  - Biblioteca del usuario. 
+  - Actividad reciente (2 semanas).
+  - Perfil básico.
+  - Jugadores concurrentes (tiempo real).
 
 
 
