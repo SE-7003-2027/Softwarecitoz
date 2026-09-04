@@ -1,0 +1,42 @@
+---
+title: "Base de datos"
+---
+
+## Motor
+
+
+## Modelo de datos
+Lo podemos hacer con mermeid (ejemplo rapido) o dbdiagram.io (es muy bueno)
+
+```{mermaid}
+erDiagram
+    USUARIO ||--o{ SESION : tiene
+    USUARIO ||--o{ RECURSO : posee
+    RECURSO ||--o{ ITEM : contiene
+```
+
+## Tablas principales
+
+| Tabla | Descripción |
+|---|---|
+| `usuarios` | cuentas |
+| `sesiones` | tokens / sesiones activas |
+| `recursos` | _entidad principal del dominio_ |
+
+<!-- ## Migraciones
+Es un tema que ya se vera despues pero es indispensable para cosas en produccion
+
+```bash
+# crear migración
+npm run migrate:make <nombre>
+
+# aplicar
+npm run migrate:up
+
+# revertir
+npm run migrate:down
+``` -->
+
+
+<!-- - Las migraciones viven en `apps/api/migrations/`.
+- Nunca editar una migración ya aplicada en un ambiente compartido. -->

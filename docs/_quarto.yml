@@ -1,0 +1,58 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Documentación de la App"
+  description: "Guía técnica: arquitectura, desarrollo, API y despliegue"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Inicio
+      - href: 01-primeros-pasos/requisitos.qmd
+        text: Primeros pasos
+      - href: 02-arquitectura/vision-general.qmd
+        text: Arquitectura
+      - href: 03-guias-desarrollo/convenciones-codigo.qmd
+        text: Desarrollo
+      - href: 04-api/autenticacion.qmd
+        text: API
+      - href: 05-despliegue/ambientes.qmd
+        text: Despliegue
+      - href: 06-decisiones-tecnicas/index.qmd
+        text: ADRs
+      - href: changelog/index.qmd
+        text: Changelog
+  sidebar:
+    style: docked #investigar sobre mas estilos
+    search: true
+    collapse-level: 1
+    contents:
+      - index.qmd
+      - section: "Primeros pasos"
+        contents: "01-primeros-pasos/*.qmd"
+      - section: "Arquitectura"
+        contents: "02-arquitectura/*.qmd"
+      - section: "Guías de desarrollo"
+        contents: "03-guias-desarrollo/*.qmd"
+      - section: "API"
+        contents: "04-api/*.qmd"
+      - section: "Despliegue"
+        contents: "05-despliegue/*.qmd"
+      - section: "Decisiones técnicas (ADRs)"
+        contents:
+          - 06-decisiones-tecnicas/index.qmd
+      - section: "Changelog"
+        contents:
+          - changelog/index.qmd
+
+
+#investigar mas temas y formas
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    number-sections: false
+    code-copy: true
+    code-overflow: wrap

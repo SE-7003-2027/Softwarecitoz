@@ -1,0 +1,28 @@
+---
+title: "0002 - Estrategia de caché"
+date: 2026-02-01
+author: "Equipo"
+---
+
+**Estado:** Aceptada
+
+## Contexto
+
+_Problemas de latencia / carga que motivan una capa de caché._
+
+## Opciones consideradas
+
+| Opción | Pros | Contras |
+|---|---|---|
+| Sin caché | simple | no escala |
+| Caché en memoria | rápido | no compartida entre instancias |
+| Caché distribuida (Redis) | compartida, TTL | infra adicional |
+
+## Decisión
+
+_Elegimos **X** con TTL de _N_ y invalidación por evento._
+
+## Consecuencias
+
+- Positivas: _..._
+- Negativas / trade-offs: _..._

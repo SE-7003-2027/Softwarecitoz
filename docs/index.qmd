@@ -1,0 +1,22 @@
+---
+title: "Documentación de la App"
+---
+
+## Qué es esta app
+
+_Descripción de una o dos frases: qué problema resuelve, qué hace._
+
+## Para quién es esta documentación
+
+- **Desarrolladores nuevos** en el equipo → empieza por [Primeros pasos](01-primeros-pasos/requisitos.qmd).
+- **Quien necesita entender el sistema** → ve a [Arquitectura](02-arquitectura/vision-general.qmd).
+- **Integradores / consumidores de la API** → revisa [API](04-api/autenticacion.qmd).
+- **Responsables de release y operación** → mira [Despliegue](05-despliegue/ambientes.qmd).
+
+## Estado del proyecto
+
+| Aspecto | Detalle |
+|---|---|
+| Versión actual | `0.0.0` |
+| Stack principal | _frontend / backend / base de datos_ |
+| Última actualización | _fecha_ |

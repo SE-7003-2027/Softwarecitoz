@@ -1,0 +1,39 @@
+---
+title: "Entorno local"
+---
+
+## 1. Clonar el repo
+
+```bash
+git clone <url-del-repo>
+cd <repo>
+```
+
+<!-- ## 2. Variables de entorno
+
+```bash
+cp .env.example .env
+# editar .env con los valores locales
+``` -->
+
+<!-- Ver [Variables de entorno](../05-despliegue/variables-entorno.qmd) para el detalle de cada variable. -->
+
+## 2. Levantar servicios
+
+```bash
+docker compose up -d
+```
+
+| Servicio | URL local |
+|---|---|
+| Frontend | http://localhost:3000 |
+| Backend / API | http://localhost:8000 |
+| Base de datos | localhost: |
+
+
+
+<!-- ## 4. Verificar
+
+```bash
+curl http://localhost:8000/health
+``` -->

@@ -1,0 +1,24 @@
+---
+title: "Endpoints"
+---
+
+## Referencia
+
+embeber OpenAPI/Swagger
+
+
+```html
+<iframe src="https://petstore.swagger.io/?url=/openapi.yaml"
+        width="100%" height="600" style="border:0"></iframe>
+```
+
+## Errores
+
+| Código | Significado |
+|---|---|
+| `400` | petición inválida |
+| `401` | sin autenticar |
+| `403` | sin permiso |
+| `404` | no encontrado |
+| `422` | validación fallida |
+| `500` | error interno |

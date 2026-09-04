@@ -1,0 +1,27 @@
+---
+title: "Estructura del repositorio"
+---
+
+## Mapa del repo
+
+```text
+repo/
+├── apps/
+│   ├── web/            ← frontend
+│   └── api/            ← backend
+├── docs-src/           ← esta documentación (Quarto)
+└── docker-compose.yml
+```
+<!-- ├── infra/              ← IaC, docker, manifiestos -->
+<!-- ├── packages/           ← código compartido
+│   ├── ui/
+│   └── config/ -->
+
+## Convenciones de carpetas
+
+| Carpeta | Contiene |
+|---|---|
+| `apps/*` | aplicaciones desplegables |
+| `docs-src/*` | fuentes de la documentación |
+<!-- | `packages/*` | bibliotecas internas reutilizables | -->
+<!-- | `infra/*` | definición de infraestructura y despliegue | -->

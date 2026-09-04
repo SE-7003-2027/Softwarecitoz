@@ -1,0 +1,29 @@
+---
+title: "0001 - Elección de framework"
+date: 2026-01-01
+author: "Equipo"
+---
+
+**Estado:** Aceptada
+
+## Contexto
+
+_Qué necesitábamos decidir y por qué ahora._
+
+## Opciones consideradas
+
+| Opción | Pros | Contras |
+|---|---|---|
+| A | ... | ... |
+| B | ... | ... |
+| C | ... | ... |
+
+## Decisión
+
+_Elegimos **X** porque..._
+
+## Consecuencias
+
+- Positivas: _..._
+- Negativas / trade-offs: _..._
+- Qué habría que revisar si esto cambia.
