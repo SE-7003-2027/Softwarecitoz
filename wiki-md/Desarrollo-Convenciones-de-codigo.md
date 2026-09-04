@@ -1,0 +1,27 @@
+# Convenciones de código
+
+
+<!-- ## Principios
+lo saque de un repo publico
+- Legibilidad sobre astucia.
+- Un cambio, un propósito. -->
+
+## Estilo y formato
+
+| Lenguaje  | Linter | Formateador |
+|-----------|--------|-------------|
+| JS/TS     | ESLint | Prettier    |
+| *backend* | *…*    | *…*         |
+
+## Nomenclatura
+
+| Elemento              | Convención    | Ejemplo           |
+|-----------------------|---------------|-------------------|
+| Archivos              | `kebab-case`  | `user-service.ts` |
+| Componentes           | `PascalCase`  | `UserCard`        |
+| Variables / funciones | `camelCase`   | `getUser`         |
+| Constantes            | `UPPER_SNAKE` | `MAX_RETRIES`     |
+
+## Comentarios
+
+Nuestra convencion de como irán los comentarios

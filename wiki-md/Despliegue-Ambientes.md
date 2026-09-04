@@ -1,0 +1,25 @@
+# Ambientes
+
+
+## Ambientes
+
+| Ambiente | Rama         | URL                   | Propósito              |
+|----------|--------------|-----------------------|------------------------|
+| dev      | `feature/*`  | efímero / local       | desarrollo             |
+| staging  | `main`       | `staging.ejemplo.com` | QA y validación previa |
+| prod     | tag `vx.y.z` | `app.ejemplo.com`     | producción             |
+
+## Diferencias por ambiente
+
+| Aspecto | dev                | staging    | prod       |
+|---------|--------------------|------------|------------|
+| Datos   | ficticios          | quien sabe | reales     |
+| Logs    | verbose o extensos | info       | warn/error |
+
+<!-- | Feature flags | todas on | según prueba | controladas | -->
+
+## Promoción
+
+``` text
+feature/*  →  main (staging)  →  tag vx.y.z (prod)
+```

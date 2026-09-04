@@ -1,0 +1,73 @@
+name: Publicar wiki desde docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "scripts/qmd_to_wiki.py"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  render-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Render docs a GFM
+        run: quarto render docs --to gfm --output-dir ../_gfm_out
+
+      - name: Convertir a páginas de wiki
+        env:
+          QUARTO_GFM_DIR: _gfm_out
+        run: python3 scripts/qmd_to_wiki.py
+
+      - name: Commit wiki-md/ en el repo principal
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add wiki-md/
+          if git diff --cached --quiet; then
+            echo "Sin cambios en wiki-md/, nada que commitear."
+          else
+            git commit -m "docs: sincronizar wiki-md desde docs [skip ci]"
+            git push
+          fi
+
+      - name: Checkout de la wiki
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: wiki-checkout
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Copiar páginas generadas a la wiki
+        run: |
+          rsync -av --delete \
+            --exclude ".git" \
+            wiki-md/ wiki-checkout/
+
+      - name: Commit y push a la wiki
+        run: |
+          cd wiki-checkout
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Sin cambios en la wiki, nada que publicar."
+          else
+            git commit -m "Sincronizar wiki desde docs (${{ github.sha }})"
+            git push
+          fi

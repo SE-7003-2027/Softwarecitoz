@@ -1,0 +1,35 @@
+# Git workflow
+
+
+## Ramas
+
+| Rama                | Propósito                       |
+|---------------------|---------------------------------|
+| `main`              | siempre desplegable             |
+| `feature/<nombre>`  | desarrollo de una funcionalidad |
+| `fix/<nombre>`      | corrección de bug               |
+| `release/<version>` | preparación de release          |
+
+## Commits
+
+Formato [Conventional Commits](https://www.conventionalcommits.org/):
+
+``` text
+feat: agregar login con OAuth
+fix: corregir cálculo de impuestos
+docs: actualizar guía de despliegue
+```
+
+## Pull Requests
+
+(tenemos que generar el template del PR)
+
+- PR pequeño y enfocado.
+- Descripción con contexto y checklist.
+- CI en verde + al menos 1 revisión antes de merge.
+- Merge con *squash* (a discusion).
+
+## Releases
+
+Debemos buscar como es que se documentan releases y como se manejan en
+github

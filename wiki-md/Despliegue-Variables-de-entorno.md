@@ -1,0 +1,26 @@
+# Variables de entorno
+
+
+## Convenciones
+
+- Nunca commitear `.env` real. Solo `.env.example`.
+- Secretos en el gestor de secretos del proveedor, no en el repo.
+
+## Variables
+
+| Variable | Ejemplo | Requerida | Descripción |
+|----|----|----|----|
+| `APP` | `mode` | sí | modo de ejecución (ponerlo en dev o prod) |
+| `DATABASE_URL` | `postgres://...` | sí | conexión a la DB |
+| `API_URL` | `https://api.ejemplo.com` | sí | base de la API para el frontend si desplegamos en un dominio |
+| `JWT_SECRET` | `...` | sí | firma de tokens |
+| `LOG_LEVEL` | `info` | no | nivel de logs |
+
+<!-- | `QUEUE_URL` | `redis://...` | sí | cola de trabajos | -->
+
+## Por ambiente
+
+| Variable       | dev     | staging | prod   |
+|----------------|---------|---------|--------|
+| `LOG_LEVEL`    | `debug` | `info`  | `warn` |
+| `DATABASE_URL` | local   | staging | prod   |

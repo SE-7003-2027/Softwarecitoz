@@ -1,0 +1,4 @@
+_gfm_out/
+docs/_site/
+docs/.quarto/
+.DS_Store
