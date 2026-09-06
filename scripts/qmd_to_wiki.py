@@ -10,6 +10,8 @@ Uso:
 Requiere que ya se haya corrido:
     quarto render docs --to gfm --output-dir <tmp>
 y que ese <tmp> se pase por la env var QUARTO_GFM_DIR (ver workflow).
+Normalmente para que la carpeta se cree en la raiz se usa <tmp> = ../_gfm_out
+
 """
 from __future__ import annotations
 
@@ -28,6 +30,7 @@ GFM_DIR = Path(os.environ.get("QUARTO_GFM_DIR", REPO_ROOT / "_gfm_out"))
 # cada vez que agregues un .qmd nuevo.
 PAGE_MAP: dict[str, str] = {
     "index.qmd": "Home",
+    "00-prd/PRD.qmd": "PRD",
     "01-primeros-pasos/requisitos.qmd": "Primeros-pasos-Requisitos",
     "01-primeros-pasos/entorno-local.qmd": "Primeros-pasos-Entorno-local",
     "01-primeros-pasos/estructura-repo.qmd": "Primeros-pasos-Estructura-del-repositorio",

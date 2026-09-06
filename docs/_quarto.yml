@@ -9,6 +9,8 @@ website:
     left:
       - href: index.qmd
         text: Inicio
+      - href: 00-prd/PRD.qmd
+        text: PRD
       - href: 01-primeros-pasos/requisitos.qmd
         text: Primeros pasos
       - href: 02-arquitectura/vision-general.qmd
@@ -29,6 +31,7 @@ website:
     collapse-level: 1
     contents:
       - index.qmd
+      - 00-prd/PRD.qmd
       - section: "Primeros pasos"
         contents: "01-primeros-pasos/*.qmd"
       - section: "Arquitectura"
