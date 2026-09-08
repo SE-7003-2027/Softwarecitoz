@@ -23,6 +23,8 @@ website:
         text: ADRs
       - href: 06-changelog/index.qmd
         text: Changelog
+      - href: 07-spikes/index.qmd
+        text: Spikes
   sidebar:
     style: docked #investigar sobre mas estilos
     search: true
@@ -41,8 +43,9 @@ website:
       - section: "Decisiones técnicas (ADRs)"
         contents: "05-decisiones-tecnicas/*.qmd"
       - section: "Changelog"
-        contents:
-          - 06-changelog/index.qmd
+        contents: "06-changelog/*.qmd"
+      - section: "Spikes"
+        contents: "07-spikes/*.qmd"
 
 
 #investigar mas temas y formas
