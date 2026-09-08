@@ -31,6 +31,7 @@
 - [Git workflow](Desarrollo-Git-workflow)
 - [Testing](Desarrollo-Testing)
 - [Troubleshooting](Desarrollo-Troubleshooting)
+- [Cambios wiki](Desarrollo-Wiki)
 
 ### Decisiones técnicas (ADRs)
 
