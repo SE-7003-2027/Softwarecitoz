@@ -63,6 +63,7 @@ WIKI_STRUCTURE: list[tuple[str, list[tuple[str, str]]]] = [
         ("05-decisiones-tecnicas/index.qmd", "ADRs"),
         ("05-decisiones-tecnicas/0001-eleccion-de-framework.qmd", "ADR-0001-Eleccion-de-framework"),
         ("05-decisiones-tecnicas/0002-eleccion-de-frontend.qmd", "ADR-0002-Eleccion-de-frontend"),
+        ("05-decisiones-tecnicas/rfc-0001-base-de-datos.qmd", "RFC-0001-Base-de-datos"),
     ]),
     ("Changelog", [
         ("06-changelog/index.qmd", "Changelog"),
@@ -100,6 +101,7 @@ SIDEBAR_LABELS: dict[str, str] = {
     "ADRs": "Índice de ADRs",
     "ADR-0001-Eleccion-de-framework": "ADR-0001 — Elección de framework",
     "ADR-0002-Eleccion-de-frontend": "ADR-0002 — Eleccion de frontend",
+    "RFC-0001-Base-de-datos": "RFC-0001 — Base de datos",
     "Changelog": "Changelog",
     "Changelog-v0.1.0": "v0.1.0",
 }
