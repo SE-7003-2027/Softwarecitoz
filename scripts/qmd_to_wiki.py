@@ -50,6 +50,7 @@ PAGE_MAP: dict[str, str] = {
     "06-decisiones-tecnicas/index.qmd": "ADRs",
     "06-decisiones-tecnicas/0001-eleccion-de-framework.qmd": "ADR-0001-Eleccion-de-framework",
     "06-decisiones-tecnicas/0002-estrategia-de-cache.qmd": "ADR-0002-Estrategia-de-cache",
+    "07-implementacion/index.qmd": "Implementacion",
     "changelog/index.qmd": "Changelog",
     "changelog/v0.1.0.qmd": "Changelog-v0.1.0",
 }
