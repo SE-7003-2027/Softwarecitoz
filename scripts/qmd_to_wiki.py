@@ -69,6 +69,10 @@ WIKI_STRUCTURE: list[tuple[str, list[tuple[str, str]]]] = [
         ("06-changelog/index.qmd", "Changelog"),
         ("06-changelog/v0.1.0.qmd", "Changelog-v0.1.0"),
     ]),
+    ("Spikes", [
+        ("07-spikes/index.qmd", "Spikes")
+
+    ])
 ]
 
 # Mapeo plano derivado (ruta .qmd -> nombre de página wiki). Se usa para resolver
@@ -104,6 +108,7 @@ SIDEBAR_LABELS: dict[str, str] = {
     "RFC-0001-Base-de-datos": "RFC-0001 — Base de datos",
     "Changelog": "Changelog",
     "Changelog-v0.1.0": "v0.1.0",
+    "Spikes": "Spikes",
 }
 
 TITLE_RE = re.compile(r'^title:\s*"?(.*?)"?\s*$', re.MULTILINE)

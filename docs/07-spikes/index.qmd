@@ -1,0 +1,14 @@
+---
+title: "Spikes"
+listing:
+  contents: "v*.qmd"
+  type: default
+  sort: "date desc"
+  fields: [title, date, description]
+  sort-ui: false
+  filter-ui: false
+---
+
+# Spikes 
+Registro de spikes para la mejora continua del proyecto
+
