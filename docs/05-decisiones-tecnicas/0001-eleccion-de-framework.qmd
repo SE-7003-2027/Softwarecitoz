@@ -1,29 +1,38 @@
 ---
-title: "0001 - Elección de framework"
-date: 2026-01-01
-author: "Equipo"
+title: "ADR 0001: Elección de Python (FastAPI) como Lenguaje y Framework para el Backend"
 ---
 
-**Estado:** Aceptada
+* **Estado:** Aprobado
 
 ## Contexto
+Para el desarrollo de la app web, se necesita la implementacion de un servicio backend encargado de:
+1. Gestionar la comunicacion con la API Web de Steam mediante autenticacion OpenID y peticiones HTTP REST.
+2. Procesar catalogos de videojuegos y juegos de mesa.
+3. Ejecutar la logica matematica del algoritmo de emparejamiento (similitud en conjuntos por bibliotecas y disponibilidad horaria).
+4. Exponer una API RESTful limpia para el consumo del Frontend y conectarse a una base de datos PostgreSQL.
 
-_Qué necesitábamos decidir y por qué ahora._
-
-## Opciones consideradas
-
-| Opción | Pros | Contras |
-|---|---|---|
-| A | ... | ... |
-| B | ... | ... |
-| C | ... | ... |
 
 ## Decisión
+Decidimos adoptar **Python** como lenguaje de programacion principal para el backend, utilizando **FastAPI** como el framework para la construccion de la API RESTful.
 
-_Elegimos **X** porque..._
+La desicion se tomo por:
+
+* Los integrantes del equipo tenemos conocimientos previos en el lenguaje de Python, a parte de ser un lenguaje amigable, por lo que minimizamos problemas futuros de otros lenguajes mas robustos, pero con mayor complejidad.
+* Python facilita la manipulacion de estructuras de datos (listas, conjuntos y diccionarios), haciendo que la programacion del motor de emparejamiento sea más simple, clara y legible
+* Tiene soporte asincrono nativo para llamadas a APIs externas (en este caso Steam).
+
+## Alternativa Considerada
+
+* **Java (Spring Boot):**
+  * *Ventaja:* Es una herramienta estable, robusta y usada a nivel empresarial.
+  * *Causa de descarte:* Para desarrollar el proyecto a nivel de la materia es mas pesado. Requiere mas lineas de codigo de configuracion y estructura inicial ante de tener algo funcional. Llevaria mas tiempo el desarrollo en este que en python.
 
 ## Consecuencias
 
-- Positivas: _..._
-- Negativas / trade-offs: _..._
-- Qué habría que revisar si esto cambia.
+* **Consecuencias Positivas:**
+  * Alta productividad desde la primera semana gracias al dominio previo del lenguaje por parte del equipo.
+  * El codigo de la API de Steam y del motor de emparejamiento sera corto, legible y facil de entender durante explicaciones del proyecto.
+  * Disponibilidad de librerias optimizadas para diferentes puntos del proyecto.
+
+* **Consecuencias Negativas**
+  * Al no utilizar las funciones automaticas de autenticacion de la base de datos, asumiremos la responsabilidad mediante el backend de programar la autenticacion de usuarios y la seguridad de los endpoints en Python.
