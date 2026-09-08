@@ -36,7 +36,8 @@
 
 - [Índice de ADRs](ADRs)
 - [ADR-0001 — Elección de framework](ADR-0001-Eleccion-de-framework)
-- [ADR-0002 — Estrategia de caché](ADR-0002-Estrategia-de-cache)
+- [ADR-0002 — Eleccion de frontend](ADR-0002-Eleccion-de-frontend)
+- [RFC-0001 — Base de datos](RFC-0001-Base-de-datos)
 
 ### Changelog
 

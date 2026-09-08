@@ -1,0 +1,47 @@
+# RFC: Uso de Supabase como Base de datos en la nube
+
+
+El proyecto necesita una base de datos relacional para almacenar los
+datos de los usuario de su perfil, como bibliotecas de videjuegos y
+juegos de mesa, horarios, registros de emparejamiento, entre otros mas.
+La idea es que la base de datos se tenga en una plataforma y las
+llamadas a las API, flujos de autenticacion, motor de emparejamiento y
+la logica en general se procesaran con el backend en Python.
+
+**La propuesta** es utilizar **Supabase** unicamente como la base de
+datos de PostgreSQL en la nube. Nuestro backend en Python se conectara a
+la base de datos de Supabase mediante una cadena de conexion estandar
+(URI de PostgreSQL)
+
+## Pros y contras
+
+- **Pros:**
+  - Ofrece plan gratuito con almacenamiento de hasta 500 MB y 1 GB de
+    almacenamiento de archivos, suficiente para el proyecto.
+  - Administra el servidor por si mismo, ahorrando configuraciones
+    extras que se tendrian que hacer con otras alternativas.
+  - Proporciona un panel de administracion visual y APIs RESTful
+    autogeneradas sobre las tablas de PostgreSQL
+- **Contras:**
+  - En la capa gratuita, la base de datos entra en modo de pausa si
+    transcurren 7 dias sin recibir peticiones HTTP, pero se mantiene sin
+    borrar nada, solamente se tiene que reactivar manualmente.
+  - Al ser una base de datos en la nube, los cambios se realizan al
+    momento, por lo que en trabajo de equipo lo que realice uno puede
+    afectar a otro integrante.
+  - Al ser directamente en la nube se tiene la dependencia de tener
+    internet para su uso.
+
+## Alternativa considerada
+
+- **Alojamiento administrado en Render / Railway:** Ofrecen bases de
+  datos PostgreSQL en la nube gratuitas, pero con limites de tiempo y
+  con la restriccion de despues de 30 dias creada se caduca y no se
+  puede seguir utilizando a menos que se integre a un plan de pago
+  mensual.
+
+## Preguntas abiertas
+
+- ¿Mantendremos un contenedor de PostgreSQL local con Docker para que el
+  equipo programe sin depender de la conexion a internet de Supabase
+  durante el desarrollo?
