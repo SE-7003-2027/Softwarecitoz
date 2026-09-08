@@ -13,17 +13,15 @@ website:
         text: PRD
       - href: 01-primeros-pasos/requisitos.qmd
         text: Primeros pasos
-      - href: 02-arquitectura/vision-general.qmd
-        text: Arquitectura
-      - href: 03-guias-desarrollo/convenciones-codigo.qmd
+      - href: 02-diseno-sistema/vision-general.qmd
+        text: Diseño del sistema
+      - href: 03-implementacion/index.qmd
+        text: Implementación
+      - href: 04-guias-desarrollo/convenciones-codigo.qmd
         text: Desarrollo
-      - href: 04-api/autenticacion.qmd
-        text: API
-      - href: 05-despliegue/ambientes.qmd
-        text: Despliegue
-      - href: 06-decisiones-tecnicas/index.qmd
+      - href: 05-decisiones-tecnicas/index.qmd
         text: ADRs
-      - href: changelog/index.qmd
+      - href: 06-changelog/index.qmd
         text: Changelog
   sidebar:
     style: docked #investigar sobre mas estilos
@@ -34,20 +32,17 @@ website:
       - 00-prd/PRD.qmd
       - section: "Primeros pasos"
         contents: "01-primeros-pasos/*.qmd"
-      - section: "Arquitectura"
-        contents: "02-arquitectura/*.qmd"
+      - section: "Diseño del sistema"
+        contents: "02-diseno-sistema/*.qmd"
+      - section: "Detalles de implementación"
+        contents: "03-implementacion/*.qmd"
       - section: "Guías de desarrollo"
-        contents: "03-guias-desarrollo/*.qmd"
-      - section: "API"
-        contents: "04-api/*.qmd"
-      - section: "Despliegue"
-        contents: "05-despliegue/*.qmd"
+        contents: "04-guias-desarrollo/*.qmd"
       - section: "Decisiones técnicas (ADRs)"
-        contents:
-          - 06-decisiones-tecnicas/index.qmd
+        contents: "05-decisiones-tecnicas/*.qmd"
       - section: "Changelog"
         contents:
-          - changelog/index.qmd
+          - 06-changelog/index.qmd
 
 
 #investigar mas temas y formas
