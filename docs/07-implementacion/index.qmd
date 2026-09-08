@@ -1,0 +1,14 @@
+---
+title: "Implementacion"
+listing:
+  contents: "0*.qmd"
+  type: table
+  sort: "date desc"
+  fields: [title, date, author]
+  sort-ui: false
+  filter-ui: false
+---
+
+Distintas decisiones sobre la implementacion del proyecto
+
+

@@ -23,6 +23,8 @@ website:
         text: Despliegue
       - href: 06-decisiones-tecnicas/index.qmd
         text: ADRs
+      - href: 07-implementacion/index.qmd
+        text: Implementacion
       - href: changelog/index.qmd
         text: Changelog
   sidebar:
@@ -43,8 +45,9 @@ website:
       - section: "Despliegue"
         contents: "05-despliegue/*.qmd"
       - section: "Decisiones técnicas (ADRs)"
-        contents:
-          - 06-decisiones-tecnicas/index.qmd
+        contents: "06-decisiones-tecnicas/*.qmd"
+      - section: "Implementacion"
+        contents: "07-implementacion/*.qmd"
       - section: "Changelog"
         contents:
           - changelog/index.qmd
