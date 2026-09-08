@@ -58,6 +58,7 @@ WIKI_STRUCTURE: list[tuple[str, list[tuple[str, str]]]] = [
         ("04-guias-desarrollo/git-workflow.qmd", "Desarrollo-Git-workflow"),
         ("04-guias-desarrollo/testing.qmd", "Desarrollo-Testing"),
         ("04-guias-desarrollo/troubleshooting.qmd", "Desarrollo-Troubleshooting"),
+        ("04-guias-desarrollo/agregar-documentacion-wiki.qmd", "Desarrollo-Wiki"),
     ]),
     ("Decisiones técnicas (ADRs)", [
         ("05-decisiones-tecnicas/index.qmd", "ADRs"),
@@ -102,6 +103,7 @@ SIDEBAR_LABELS: dict[str, str] = {
     "Desarrollo-Git-workflow": "Git workflow",
     "Desarrollo-Testing": "Testing",
     "Desarrollo-Troubleshooting": "Troubleshooting",
+    "Desarrollo-Wiki": "Cambios wiki",
     "ADRs": "Índice de ADRs",
     "ADR-0001-Eleccion-de-framework": "ADR-0001 — Elección de framework",
     "ADR-0002-Eleccion-de-frontend": "ADR-0002 — Eleccion de frontend",
