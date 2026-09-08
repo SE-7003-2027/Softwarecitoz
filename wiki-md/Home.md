@@ -9,12 +9,12 @@
 
 - **Desarrolladores nuevos** en el equipo → empieza por [[Primeros
   pasos|Primeros-pasos-Requisitos]].
-- **Quien necesita entender el sistema** → ve a
-  [[Arquitectura|Arquitectura-Vision-general]].
+- **Quien necesita entender el sistema** → ve a [[Diseño del
+  sistema|Diseno-Vision-general]].
 - **Integradores / consumidores de la API** → revisa
-  [[API|API-Autenticacion]].
+  [[Implementación|Implementacion-API-Autenticacion]].
 - **Responsables de release y operación** → mira
-  [[Despliegue|Despliegue-Ambientes]].
+  [[Despliegue|Implementacion-Despliegue-Ambientes]].
 
 ## Estado del proyecto
 

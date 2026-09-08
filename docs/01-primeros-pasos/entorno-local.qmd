@@ -16,7 +16,7 @@ cp .env.example .env
 # editar .env con los valores locales
 ``` -->
 
-<!-- Ver [Variables de entorno](../05-despliegue/variables-entorno.qmd) para el detalle de cada variable. -->
+<!-- Ver [Variables de entorno](../03-implementacion/despliegue-variables-entorno.qmd) para el detalle de cada variable. -->
 
 ## 2. Levantar servicios
 

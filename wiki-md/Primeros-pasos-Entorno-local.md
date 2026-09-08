@@ -14,7 +14,7 @@ cp .env.example .env
 # editar .env con los valores locales
 ``` -->
 
-<!-- Ver [[Variables de entorno|Despliegue-Variables-de-entorno]] para el detalle de cada variable. -->
+<!-- Ver [[Variables de entorno|Implementacion-Despliegue-Variables-de-entorno]] para el detalle de cada variable. -->
 
 ## 2. Levantar servicios
 

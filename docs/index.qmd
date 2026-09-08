@@ -9,9 +9,9 @@ _Descripción de una o dos frases: qué problema resuelve, qué hace._
 ## Para quién es esta documentación
 
 - **Desarrolladores nuevos** en el equipo → empieza por [Primeros pasos](01-primeros-pasos/requisitos.qmd).
-- **Quien necesita entender el sistema** → ve a [Arquitectura](02-arquitectura/vision-general.qmd).
-- **Integradores / consumidores de la API** → revisa [API](04-api/autenticacion.qmd).
-- **Responsables de release y operación** → mira [Despliegue](05-despliegue/ambientes.qmd).
+- **Quien necesita entender el sistema** → ve a [Diseño del sistema](02-diseno-sistema/vision-general.qmd).
+- **Integradores / consumidores de la API** → revisa [Implementación](03-implementacion/api-autenticacion.qmd).
+- **Responsables de release y operación** → mira [Despliegue](03-implementacion/despliegue-ambientes.qmd).
 
 ## Estado del proyecto
 

@@ -1,0 +1,20 @@
+---
+title: "Detalles de implementación"
+listing:
+  contents:
+    - api-autenticacion.qmd
+    - api-endpoints.qmd
+    - despliegue-ambientes.qmd
+    - despliegue-ci-cd.qmd
+    - despliegue-variables-entorno.qmd
+  type: table
+  fields: [title]
+  sort-ui: false
+  filter-ui: false
+---
+
+Cómo está construido y cómo se opera el sistema: API concreta, ambientes,
+CI/CD y variables de entorno.
+
+> **TODO:** varias de estas páginas están en plantilla. Ver los issues de
+> documentación para saber cuáles faltan por llenar.

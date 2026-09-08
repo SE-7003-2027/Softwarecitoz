@@ -25,34 +25,83 @@ DOCS_SRC = REPO_ROOT / "docs"
 WIKI_MD = REPO_ROOT / "wiki-md"
 GFM_DIR = Path(os.environ.get("QUARTO_GFM_DIR", REPO_ROOT / "_gfm_out"))
 
-# Mapeo explícito: ruta relativa del .qmd (dentro de docs/) -> nombre de página de wiki (sin .md)
-# Este mapeo es la fuente de verdad para nombres/orden; añade una entrada aquí
-# cada vez que agregues un .qmd nuevo.
+# Estructura de la wiki: lista ordenada de secciones, cada una con sus páginas.
+# Es la fuente de verdad para nombres, ORDEN y agrupación del _Sidebar.md.
+# Cada página es (ruta relativa del .qmd dentro de docs/, nombre de página wiki sin .md).
+# Al agregar un .qmd nuevo, añádelo a la sección que le corresponde aquí.
+WIKI_STRUCTURE: list[tuple[str, list[tuple[str, str]]]] = [
+    ("Inicio", [
+        ("index.qmd", "Home"),
+        ("00-prd/PRD.qmd", "PRD"),
+    ]),
+    ("Primeros pasos", [
+        ("01-primeros-pasos/requisitos.qmd", "Primeros-pasos-Requisitos"),
+        ("01-primeros-pasos/entorno-local.qmd", "Primeros-pasos-Entorno-local"),
+        ("01-primeros-pasos/estructura-repo.qmd", "Primeros-pasos-Estructura-del-repositorio"),
+    ]),
+    ("Diseño del sistema", [
+        ("02-diseno-sistema/vision-general.qmd", "Diseno-Vision-general"),
+        ("02-diseno-sistema/frontend.qmd", "Diseno-Frontend"),
+        ("02-diseno-sistema/backend.qmd", "Diseno-Backend"),
+        ("02-diseno-sistema/base-de-datos.qmd", "Diseno-Base-de-datos"),
+    ]),
+    ("Detalles de implementación", [
+        ("03-implementacion/index.qmd", "Implementacion"),
+        ("03-implementacion/api-autenticacion.qmd", "Implementacion-API-Autenticacion"),
+        ("03-implementacion/api-endpoints.qmd", "Implementacion-API-Endpoints"),
+        ("03-implementacion/despliegue-ambientes.qmd", "Implementacion-Despliegue-Ambientes"),
+        ("03-implementacion/despliegue-ci-cd.qmd", "Implementacion-Despliegue-CI-CD"),
+        ("03-implementacion/despliegue-variables-entorno.qmd", "Implementacion-Despliegue-Variables-de-entorno"),
+    ]),
+    ("Guías de desarrollo", [
+        ("04-guias-desarrollo/convenciones-codigo.qmd", "Desarrollo-Convenciones-de-codigo"),
+        ("04-guias-desarrollo/git-workflow.qmd", "Desarrollo-Git-workflow"),
+        ("04-guias-desarrollo/testing.qmd", "Desarrollo-Testing"),
+        ("04-guias-desarrollo/troubleshooting.qmd", "Desarrollo-Troubleshooting"),
+    ]),
+    ("Decisiones técnicas (ADRs)", [
+        ("05-decisiones-tecnicas/index.qmd", "ADRs"),
+        ("05-decisiones-tecnicas/0001-eleccion-de-framework.qmd", "ADR-0001-Eleccion-de-framework"),
+        ("05-decisiones-tecnicas/0002-estrategia-de-cache.qmd", "ADR-0002-Estrategia-de-cache"),
+    ]),
+    ("Changelog", [
+        ("06-changelog/index.qmd", "Changelog"),
+        ("06-changelog/v0.1.0.qmd", "Changelog-v0.1.0"),
+    ]),
+]
+
+# Mapeo plano derivado (ruta .qmd -> nombre de página wiki). Se usa para resolver
+# enlaces internos y para el bucle de conversión.
 PAGE_MAP: dict[str, str] = {
-    "index.qmd": "Home",
-    "00-prd/PRD.qmd": "PRD",
-    "01-primeros-pasos/requisitos.qmd": "Primeros-pasos-Requisitos",
-    "01-primeros-pasos/entorno-local.qmd": "Primeros-pasos-Entorno-local",
-    "01-primeros-pasos/estructura-repo.qmd": "Primeros-pasos-Estructura-del-repositorio",
-    "02-arquitectura/vision-general.qmd": "Arquitectura-Vision-general",
-    "02-arquitectura/frontend.qmd": "Arquitectura-Frontend",
-    "02-arquitectura/backend.qmd": "Arquitectura-Backend",
-    "02-arquitectura/base-de-datos.qmd": "Arquitectura-Base-de-datos",
-    "03-guias-desarrollo/convenciones-codigo.qmd": "Desarrollo-Convenciones-de-codigo",
-    "03-guias-desarrollo/git-workflow.qmd": "Desarrollo-Git-workflow",
-    "03-guias-desarrollo/testing.qmd": "Desarrollo-Testing",
-    "03-guias-desarrollo/troubleshooting.qmd": "Desarrollo-Troubleshooting",
-    "04-api/autenticacion.qmd": "API-Autenticacion",
-    "04-api/endpoints.qmd": "API-Endpoints",
-    "05-despliegue/ambientes.qmd": "Despliegue-Ambientes",
-    "05-despliegue/ci-cd.qmd": "Despliegue-CI-CD",
-    "05-despliegue/variables-entorno.qmd": "Despliegue-Variables-de-entorno",
-    "06-decisiones-tecnicas/index.qmd": "ADRs",
-    "06-decisiones-tecnicas/0001-eleccion-de-framework.qmd": "ADR-0001-Eleccion-de-framework",
-    "06-decisiones-tecnicas/0002-estrategia-de-cache.qmd": "ADR-0002-Estrategia-de-cache",
-    "07-implementacion/index.qmd": "Implementacion",
-    "changelog/index.qmd": "Changelog",
-    "changelog/v0.1.0.qmd": "Changelog-v0.1.0",
+    key: page for _, pages in WIKI_STRUCTURE for key, page in pages
+}
+
+# Títulos legibles para el sidebar, por si el .md generado no arranca con un "# ...".
+SIDEBAR_LABELS: dict[str, str] = {
+    "Home": "Inicio",
+    "PRD": "PRD",
+    "Primeros-pasos-Requisitos": "Requisitos",
+    "Primeros-pasos-Entorno-local": "Entorno local",
+    "Primeros-pasos-Estructura-del-repositorio": "Estructura del repositorio",
+    "Diseno-Vision-general": "Visión general",
+    "Diseno-Frontend": "Frontend",
+    "Diseno-Backend": "Backend",
+    "Diseno-Base-de-datos": "Base de datos",
+    "Implementacion": "Visión general",
+    "Implementacion-API-Autenticacion": "API — Autenticación",
+    "Implementacion-API-Endpoints": "API — Endpoints",
+    "Implementacion-Despliegue-Ambientes": "Despliegue — Ambientes",
+    "Implementacion-Despliegue-CI-CD": "Despliegue — CI / CD",
+    "Implementacion-Despliegue-Variables-de-entorno": "Despliegue — Variables de entorno",
+    "Desarrollo-Convenciones-de-codigo": "Convenciones de código",
+    "Desarrollo-Git-workflow": "Git workflow",
+    "Desarrollo-Testing": "Testing",
+    "Desarrollo-Troubleshooting": "Troubleshooting",
+    "ADRs": "Índice de ADRs",
+    "ADR-0001-Eleccion-de-framework": "ADR-0001 — Elección de framework",
+    "ADR-0002-Estrategia-de-cache": "ADR-0002 — Estrategia de caché",
+    "Changelog": "Changelog",
+    "Changelog-v0.1.0": "v0.1.0",
 }
 
 TITLE_RE = re.compile(r'^title:\s*"?(.*?)"?\s*$', re.MULTILINE)
@@ -101,6 +150,25 @@ def strip_frontmatter_to_h1(content: str) -> str:
     return body
 
 
+def sidebar_label(page_name: str) -> str:
+    """Título a mostrar en el sidebar: el override de SIDEBAR_LABELS o el propio nombre de página."""
+    return SIDEBAR_LABELS.get(page_name, page_name.replace("-", " "))
+
+
+def write_sidebar() -> Path:
+    """Genera wiki-md/_Sidebar.md con las secciones y el orden de WIKI_STRUCTURE."""
+    lines: list[str] = []
+    for section_title, pages in WIKI_STRUCTURE:
+        lines.append(f"### {section_title}")
+        lines.append("")
+        for _, page_name in pages:
+            lines.append(f"- [{sidebar_label(page_name)}]({page_name})")
+        lines.append("")
+    out_path = WIKI_MD / "_Sidebar.md"
+    out_path.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+    return out_path
+
+
 def main() -> int:
     if not GFM_DIR.exists():
         print(f"ERROR: no existe el directorio de salida gfm: {GFM_DIR}", file=sys.stderr)
@@ -128,6 +196,22 @@ def main() -> int:
         out_path = WIKI_MD / f"{page_name}.md"
         out_path.write_text(content, encoding="utf-8")
         written.append(out_path.name)
+
+    sidebar_path = write_sidebar()
+    written.append(sidebar_path.name)
+
+    # Borrar .md huérfanos: páginas que ya no están en PAGE_MAP (p. ej. tras renombrar
+    # una carpeta o una página). Se conservan _Sidebar.md y _Footer.md.
+    keep = {f"{p}.md" for p in PAGE_MAP.values()} | {"_Sidebar.md", "_Footer.md"}
+    removed = []
+    for existing in WIKI_MD.glob("*.md"):
+        if existing.name not in keep:
+            existing.unlink()
+            removed.append(existing.name)
+    if removed:
+        print(f"Eliminados {len(removed)} archivos huérfanos en {WIKI_MD}:")
+        for name in removed:
+            print(f"  - {name}")
 
     print(f"Escritos {len(written)} archivos en {WIKI_MD}:")
     for name in written:
