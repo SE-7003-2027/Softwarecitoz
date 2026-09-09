@@ -71,8 +71,8 @@ WIKI_STRUCTURE: list[tuple[str, list[tuple[str, str]]]] = [
         ("06-changelog/v0.1.0.qmd", "Changelog-v0.1.0"),
     ]),
     ("Spikes", [
-        ("07-spikes/index.qmd", "Spikes")
-
+        ("07-spikes/index.qmd", "Spikes"),
+        ("07-spikes/spike-apis-matcher.qmd", "Spikes-APIs-Matcher"),
     ])
 ]
 
@@ -111,6 +111,7 @@ SIDEBAR_LABELS: dict[str, str] = {
     "Changelog": "Changelog",
     "Changelog-v0.1.0": "v0.1.0",
     "Spikes": "Spikes",
+    "Spikes-APIs-Matcher": "APIs para el matcher",
 }
 
 TITLE_RE = re.compile(r'^title:\s*"?(.*?)"?\s*$', re.MULTILINE)

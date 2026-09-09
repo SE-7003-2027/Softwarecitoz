@@ -1,0 +1,244 @@
+---
+title: "Spike: APIs disponibles para el Matcher de Partidas"
+---
+
+**Objetivo del spike:** evaluar qué APIs pueden usarse como fuente de datos del historial de juegos de los usuarios (comprados / jugados) para alimentar el matcher de partidas.
+
+**Candidatas evaluadas:**
+ 1. Steam Web API
+ 2. HowLongToBeat
+ 3. GOG
+ 4. BoardGameGeek XML API2
+ 5. RAWG
+ 6. Epic Games Store
+ 7. Riot Games API
+ 8. FACEIT API
+ 9. IGDB
+
+---
+
+## 1. Steam Web API
+
+### Estado
+
+::: {.callout-note}
+**Oficial, con documentación y viable como fuente principal de datos.**
+:::
+
+### Endpoints relevantes
+
+| Endpoint | Interfaz | ¿Qué devuelve? | ¿Para qué nos sirve? |
+|---|---|---|---|
+| `GetPlayerSummaries` | `ISteamUser` | Perfil público: nombre, avatar, estado de conexión, visibilidad del perfil | Identidad visual del usuario en el matcher, no historial de juegos |
+| `GetOwnedGames` | `IPlayerService` | Lista de `appid`, nombre y `playtime_forever` (horas jugadas) por juego que posee el usuario | El historial de juegos comprados/jugados |
+| `GetFriendList` | `ISteamUser` | Lista de amigos del usuario | Podría usarse para priorizar sugerencias entre contactos existentes |
+
+### Requisitos técnicos
+
+- API key gratuita de Steam (solicitud vía formulario de Valve).
+- SteamID64 de cada usuario — implica loguear al usuario vía OpenID de Steam, o pedírselo manualmente.
+- El perfil del usuario debe estar configurado como público, o `GetOwnedGames` no devuelve datos.
+- Formato de request: `GET https://api.steampowered.com/<interfaz>/<método>/v<versión>/?key=<key>&steamids=<id>`
+- Límite: 100,000 llamadas por cada 24 horas.
+
+### Riesgos / limitaciones
+
+- Depende de que el usuario tenga su perfil público.
+
+---
+
+## 2. HowLongToBeat (HLTB)
+
+### Estado
+
+::: {.callout-warning}
+**No tiene API oficial.**
+Todo acceso es vía scraping/wrappers de comunidad (como `howlongtobeatpy` en Python).
+:::
+
+### ¿Qué ofrecería?
+
+Tiempos estimados de finalización por juego (historia principal, historia + extras, completista), útil como dato extra, pero no como fuente de identidad ni de biblioteca del usuario.
+
+### Riesgos
+
+- Puede romperse si HLTB cambia su HTML/frontend.
+- No hay garantía de disponibilidad ni rate limits definidos.
+- No autentica usuarios ni conoce qué juegos posee cada quién, solo funciona por nombre de juego.
+
+### Recomendación
+
+Se podría usar, si acaso, como característica opcional, para enriquecer los juegos ya identificados vía Steam (por ejemplo, para mostrar cuánto dura un juego en común).
+
+---
+
+## 3. GOG
+
+### Estado
+
+::: {.callout-warning}
+**No tiene API pública para biblioteca de usuario**
+No se encontró documentación de un endpoint REST abierto a terceros.
+:::
+
+### ¿Qué existe en su lugar?
+
+GOG Galaxy 2.0 es un cliente de escritorio que permite vincular cuentas de otras tiendas (Steam, Epic, Origin, etc.) para unificar bibliotecas, pero es una integración pensada para el usuario final dentro de la app de escritorio, no una API para consumir.
+
+### Recomendación
+
+Descartar como fuente de datos.
+
+---
+
+## 4. BoardGameGeek XML API2 (juegos de mesa)
+
+### Estado
+
+::: {.callout-note}
+**Oficial, con endpoint específico de colección de usuario.**
+:::
+
+### ¿Qué ofrece?
+
+- `/xmlapi2/collection?username=<usuario>` — colección completa del usuario (filtro `own=1` para lo que posee, veces jugado, etc.).
+- `/xmlapi2/thing` — detalles de un juego (jugadores mín/máx, duración, categorías).
+- `/xmlapi2/search` — búsqueda de juegos.
+
+### Requisitos técnicos
+
+- No requiere API key.
+- Responde en XML, no JSON.
+- Puede responder de forma asíncrona: la primera petición devuelve 202 y hay que reintentar.
+- Requiere que el usuario tenga colección pública en BGG.
+
+### Recomendación
+
+Fuente principal para la parte de juegos de mesa del matcher, en paralelo a Steam para videojuegos.
+
+---
+
+## 5. RAWG Video Games Database
+
+### Estado
+
+::: {.callout-note}
+**Oficial**
+Requiere API key gratuita, pero no da biblioteca de usuario, solo metadata de juegos.
+:::
+
+### ¿Qué ofrece?
+
+Géneros, plataformas, tags, tiempo promedio de juego y tiendas donde comprarlo, para +500,000 juegos.
+
+### Recomendación
+
+Útil para el algoritmo de matching, no para obtener qué posee cada usuario.
+
+---
+
+## 6. Epic Games Store
+
+### Estado
+
+::: {.callout-warning}
+**No tiene API pública oficial para biblioteca de usuario.**
+Solo existen wrappers no oficiales basados en ingeniería inversa del login OAuth del launcher.
+:::
+
+### Recomendación
+
+Descartar, mismo motivo que GOG.
+
+## 7. Riot Games API (League of Legends, VALORANT, TFT, LoR)
+
+### Estado
+
+::: {.callout-note}
+**Oficial**.
+Endpoints interesantes: rango, historial de partidas (Match-v5), campeones usados, resultados, PUUID del jugador.
+:::
+
+### Requisitos técnicos y riesgos
+
+- La **key de desarrollo expira cada 24 horas** y para algo persistente se necesita solicitar:
+  - **Personal Key**: solo para LoL, TFT y Legends of Runeterra (no VALORANT), sin proceso de verificación tan estricto.
+  - **Production Key**: requiere ya tener un prototipo funcionando. El proceso de aprobación toma **~2 semanas hábiles**.
+- Tiene políticas de uso estrictas (por ejemplo, prohíbe mostrar win rates de ciertos modos y apps que dicten decisiones al jugador en tiempo real).
+
+### Recomendación
+
+Viable si queremos soportar LoL/TFT, pero quizá solo como *fase 2*.
+
+---
+
+## 8. FACEIT API
+
+### Estado
+
+::: {.callout-note}
+**Oficial**
+(Data API v4, `open.faceit.com/data/v4/...`), documentada, con endpoints de jugador, historial de partidas y estadísticas.
+:::
+
+### Detalles importantes
+
+- Está centrada sobre todo en la comunidad de **CS2/CS:GO**, aunque soporta otros juegos.
+- Requiere registrar una app en el portal de desarrolladores de FACEIT para obtener API key, pero sin proceso de aprobación manual (a diferencia de Riot).
+
+### Recomendación
+
+Buena opción si el matcher quiere incluir datos competitivos (ELO, nivel, win rate) para CS2 como complemento a Steam.
+
+---
+
+## 9. IGDB
+
+### Estado
+
+::: {.callout-note}
+**Oficial**
+Pero solo metadata de juegos (géneros, plataformas, franquicias), no biblioteca de usuario.
+:::
+
+### Requisito
+
+IGDB no tiene autenticación propia, corre sobre la infraestructura de Twitch. Para usarla hay que registrar la aplicación en el **Twitch Developer Portal** y autenticarse vía OAuth de Twitch, aunque el proyecto no tenga relación con Twitch.
+
+### Recomendación
+
+Puede ser una alternativa a RAWG para enriquecimiento de metadata.
+
+---
+
+## Conclusión del spike
+
+| API | ¿Oficial? | ¿Da biblioteca/historial de usuario? | Posible Rol |
+|---|---|---|---|
+| Steam Web API | Sí | Sí | Fuente principal de videojuegos |
+| BoardGameGeek XML API2 | Sí | Sí | Fuente principal de juegos de mesa |
+| FACEIT API | Sí | Sí (CS2 sobre todo) | Complemento competitivo |
+| Riot Games API | Sí | Sí | Para fases avanzadas por el riesgo de timeline por la key |
+| RAWG | Sí (con key) | No | Enriquecimiento (género/tags) |
+| IGDB | Sí (vía Twitch OAuth) | No | Enriquecimiento alterno a RAWG |
+| HowLongToBeat | No | No | Enriquecimiento opcional |
+| GOG | No | No | Descartar |
+| Epic Games Store | No | No | Descartar |
+
+Para el MVP, podríamos usar Steam Web API (`GetOwnedGames` + `GetPlayerSummaries`) y BoardGameGeek XML API2 como fuentes principales de historial. Definir las historias de usuario correspondientes y decidir el flujo de autenticación (Steam OpenID). Evaluar Riot y FACEIT como extensión posterior.
+
+---
+
+## Fuentes consultadas
+
+| API | Documentación Oficial |
+|---|---|
+| Steam Web API | https://developer.valvesoftware.com/wiki/Steam_Web_API |
+| HowLongToBeat | No hay documentación oficial. Referencia de wrapper de comunidad: https://pypi.org/project/HowLongToBeatPy/ |
+| GOG | No hay API pública documentada. Referencia sobre GOG Galaxy: https://www.gog.com/galaxy |
+| BoardGameGeek XML API2 | https://boardgamegeek.com/wiki/page/BGG_XML_API2 |
+| RAWG | https://rawg.io/apidocs |
+| Epic Games Store | No hay API pública documentada por Epic para biblioteca de usuario. |
+| Riot Games API | https://developer.riotgames.com/docs/portal · https://developer.riotgames.com/docs/lol · https://developer.riotgames.com/docs/faqs · https://developer.riotgames.com/docs/valorant · guía de terceros: https://hextechdocs.dev/getting-started-with-the-riot-games-api/ |
+| FACEIT API | https://docs.faceit.com/docs/ · https://docs.faceit.com/api/data/ |
+| IGDB | https://api-docs.igdb.com/ (autenticación vía Twitch: https://dev.twitch.tv/docs/authentication) |
