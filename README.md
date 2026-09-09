@@ -1,24 +1,23 @@
-# Softwarecitoz
+## 💥 Chaos 💥 
+Chaos es una plataforma orientada a conectar personas que buscan compañeros para jugar partidas cooperativas, tanto en videojuegos como en juegos de mesa.
 
-## Matcher de partidas
+La plataforma busca utilizar información del historial de juegos del usuario en Steam, junto con sus horarios de juego, para facilitar la búsqueda de personas con intereses y disponibilidad similares.
 
-En base al historial de juegos comprados y jugados de los usuarios, así como gustos de juegos de mesa, 
-los usuarios podrán encontrar contactos para partidas de juegos cooperativos de manera web. 
-
-## Requerimientos del sistema 
+## Features (en desarrollo) 🗣️
 
 * Registro de usuarios
-* Base de datos
+* Importación de biblioteca de Steam
+* Interfaz web
+* Busqueda de compañeros de juego
+* Consulta de actividad reciente Steam
 
-## Calidad y Pruebas
-
-* Pruebas unitarias.
-* Pruebas integración. 
-
-## Recursos
-* Para el desarrollo: HTML, CSS y JavaScript 
-* Base de datos. 
-* API's: Las funcionalidades de las API's que se podrían utilizar para recuperar la información de los usuarios de steam y juegos:
+## Stack
+* Frontend: HTML, CSS y JavaScript 
+* Backend: Python 3
+* Framework: FAST API
+* Base de datos (Por definir)
+* API's: Steam Web API
+Las funcionalidades de las API's que se podrían utilizar para recuperar la información de los usuarios de steam y juegos:
   - Biblioteca del usuario. 
   - Actividad reciente (2 semanas).
   - Perfil básico.
