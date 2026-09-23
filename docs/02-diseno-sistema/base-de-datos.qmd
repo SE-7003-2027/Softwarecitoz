@@ -10,18 +10,66 @@ Lo podemos hacer con mermeid (ejemplo rapido) o dbdiagram.io (es muy bueno)
 
 ```{mermaid}
 erDiagram
-    USUARIO ||--o{ SESION : tiene
-    USUARIO ||--o{ RECURSO : posee
-    RECURSO ||--o{ ITEM : contiene
+    Usuario {
+        int id_usuario PK
+        varchar steam_id
+        varchar url_avatar
+        date fecha_registro
+        varchar horarios_de_juego
+        varchar user_name
+    }
+
+    Solicitud {
+        int id_solicitud PK
+        int id_usuario_1 FK
+        int id_usuario_2 FK
+        date fecha
+        int estado FK
+    }
+
+    Estado {
+        int estado PK
+        varchar estado_solicitud
+    }
+
+    Juego {
+        int id_juego PK
+        varchar nombre_juego
+        int tipo_juego FK
+    }
+
+    Tipo_juego {
+        int tipo_juego PK
+        varchar Tipo_juego
+    }
+
+    Usuario_Juego {
+        int id_usuario_juego PK
+        int id_usuario FK
+        int id_juego FK
+        boolean favorito
+        int horas_jugadas
+    }
+
+    %% Relaciones
+    Usuario ||--o{ Usuario_Juego : "tiene"
+    Juego ||--o{ Usuario_Juego : "registrado en"
+    
+    Usuario ||--o{ Solicitud : "envia (usuario 1)"
+    Usuario ||--o{ Solicitud : "recibe (usuario 2)"
+    
+    Estado ||--o{ Solicitud : "define"
+    
+    Tipo_juego ||--o{ Juego : "clasifica a"
 ```
 
 ## Tablas principales
 
 | Tabla | Descripción |
 |---|---|
-| `usuarios` | cuentas |
-| `sesiones` | tokens / sesiones activas |
-| `recursos` | _entidad principal del dominio_ |
+| `usuario` | Inforamción de los usarios |
+| `Juego` | Información de los juegos |
+| `Solicitud` | Información sobre el matcheo de jugadores. Se registra la solicitud que se envia. |
 
 <!-- ## Migraciones
 Es un tema que ya se vera despues pero es indispensable para cosas en produccion
