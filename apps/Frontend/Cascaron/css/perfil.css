@@ -1,0 +1,806 @@
+
+/* CHAOS - ESTILOS GENERALES */
+
+:root {
+    --bg: #101019;
+    --bg-secondary: #171725;
+    --panel: #1d1d2d;
+    --panel-hover: #25253a;
+    --border: #303047;
+    --text: #f3f2fa;
+    --muted: #a4a2bb;
+    --primary: #8b5cf6;
+    --primary-hover: #7544df;
+    --steam: #263b50;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --radius: 14px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button,
+select,
+input[type="checkbox"] {
+    cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* ENCABEZADO Y NAVEGACIÓN */
+
+.site-header {
+    min-height: 76px;
+    padding: 0 6%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    background: #151521;
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    color: white;
+    font-size: 27px;
+    font-weight: 900;
+    letter-spacing: 3px;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.main-nav a {
+    padding: 10px 16px;
+    border-radius: 8px;
+    color: var(--muted);
+    transition: background 0.2s, color 0.2s;
+}
+
+.main-nav a:hover {
+    background: var(--panel-hover);
+    color: white;
+}
+
+.main-nav a.active {
+    background: #30234d;
+    color: #c4b5fd;
+}
+
+/* CONTENIDO Y TÍTULOS */
+
+.profile-page {
+    width: min(1050px, 92%);
+    margin: 38px auto 70px;
+}
+
+.page-heading {
+    margin-bottom: 28px;
+}
+
+.eyebrow,
+.section-tag {
+    color: #a78bfa;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.6px;
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+}
+
+.page-heading h1 {
+    margin: 0;
+    font-size: clamp(30px, 4vw, 40px);
+    line-height: 1.2;
+}
+
+.page-heading p,
+.section-heading p {
+    color: var(--muted);
+    margin: 8px 0 0;
+}
+
+.panel {
+    margin-bottom: 22px;
+    padding: 26px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+}
+
+.section-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.section-heading h2 {
+    margin: 6px 0 0;
+    font-size: 22px;
+}
+
+.section-heading p {
+    max-width: 620px;
+    font-size: 14px;
+}
+
+.text-link {
+    flex-shrink: 0;
+    color: #c4b5fd;
+    font-size: 14px;
+}
+
+.text-link:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.muted,
+.help-text,
+.readonly-note {
+    color: var(--muted);
+}
+
+.readonly-note {
+    margin: -10px 0 24px;
+    font-size: 12px;
+}
+
+/* PERFIL DE STEAM */
+
+.steam-profile {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    align-items: start;
+    gap: 25px;
+    background:
+        radial-gradient(ellipse at top right, #39265d 0%, transparent 55%),
+        var(--panel);
+}
+
+.steam-avatar {
+    width: 120px;
+    height: 120px;
+    padding: 4px;
+    border: 2px solid #8b5cf6;
+    border-radius: 50%;
+    background: #28213e;
+}
+
+.steam-avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.steam-details {
+    min-width: 0;
+}
+
+.steam-details h2 {
+    margin: 5px 0 0;
+    font-size: 28px;
+    overflow-wrap: anywhere;
+}
+
+.steam-details > .muted {
+    margin: 2px 0 14px;
+}
+
+.profile-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.status-badge,
+.info-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-online {
+    color: var(--success);
+    background: #163a2b;
+    border-color: #24543b;
+}
+
+.status-offline {
+    color: #c0bfd0;
+    background: #303040;
+    border-color: #424257;
+}
+
+.status-busy {
+    color: #fca5a5;
+    background: #451f2a;
+    border-color: #70303b;
+}
+
+.status-away {
+    color: var(--warning);
+    background: #453719;
+    border-color: #695326;
+}
+
+.info-badge {
+    color: #d4d0e7;
+    background: #2a293e;
+    border-color: #41405b;
+}
+
+.steam-id {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.steam-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-bottom: 18px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.playing-card {
+    grid-column: 1 / -1;
+    padding: 18px;
+    background: #172d29;
+    border: 1px solid #285447;
+    border-radius: 10px;
+}
+
+.playing-card h3 {
+    margin: 6px 0;
+    color: #a7f3d0;
+}
+
+.playing-card p {
+    margin: 0;
+    color: #b5d8cc;
+    font-size: 13px;
+}
+
+/* BOTONES */
+
+.button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 42px;
+    padding: 10px 16px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+}
+
+.button-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.button-primary:hover {
+    background: var(--primary-hover);
+}
+
+.button-secondary {
+    background: #303040;
+    border-color: #45455c;
+    color: var(--text);
+}
+
+.button-secondary:hover {
+    background: #3b3b50;
+}
+
+.button-steam {
+    background: var(--steam);
+    color: white;
+}
+
+.button-steam:hover {
+    background: #35536f;
+}
+
+/* FORMULARIOS */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.form-field label,
+.boardgame-panel > label {
+    color: #e5e2f4;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.form-field input,
+.form-field textarea,
+.form-field select,
+.search-row input {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 13px;
+    border: 1px solid #414158;
+    border-radius: 8px;
+    background: #141421;
+    color: var(--text);
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder,
+.search-row input::placeholder {
+    color: #77758f;
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus,
+.search-row input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.form-field input[readonly] {
+    background: #292938;
+    color: #a5a3b8;
+    cursor: not-allowed;
+}
+
+.form-field textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.form-field small,
+.help-text {
+    font-size: 12px;
+}
+
+.help-text {
+    margin: 14px 0 0;
+}
+
+/* HORARIOS */
+
+.schedule-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.schedule-day {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #191927;
+}
+
+.schedule-day > label,
+.schedule-slots label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+}
+
+.schedule-day > label {
+    font-weight: 700;
+}
+
+.schedule-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.schedule-slots label {
+    padding: 7px 10px;
+    border: 1px solid #39394f;
+    border-radius: 7px;
+    background: #222234;
+    color: #d7d4e7;
+}
+
+input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--primary);
+}
+/* HORARIOS CON RANGO DE HORAS */
+
+.schedule-day-name {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.schedule-times {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.schedule-times input[type="time"] {
+    padding: 8px 10px;
+    border: 1px solid #414158;
+    border-radius: 8px;
+    background: #141421;
+    color: var(--text);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color-scheme: dark; /* hace que el ícono del reloj sea claro */
+}
+
+.schedule-times input[type="time"]:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.schedule-times input[type="time"]:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.time-separator {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* CHIPS Y JUEGOS PREFERIDOS */
+
+.chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.choice-chip,
+.game-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border: 1px solid #4b3b72;
+    border-radius: 999px;
+    background: #2a2140;
+    color: #e3d8ff;
+    font-size: 13px;
+}
+
+.choice-chip input {
+    accent-color: var(--primary);
+}
+
+.game-chip {
+    border-color: #414158;
+    background: #29293b;
+    color: #e3e0f2;
+}
+
+.game-chip button {
+    padding: 0 2px;
+    border: 0;
+    background: transparent;
+    color: #c4b5fd;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.game-chip button:hover {
+    color: white;
+}
+
+/* PESTAÑAS Y BUSCADOR DE JUEGOS DE MESA */
+
+.tab-list {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.tab-button {
+    padding: 10px 14px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: var(--muted);
+}
+
+.tab-button:hover {
+    color: white;
+}
+
+.tab-button.active {
+    border-bottom-color: var(--primary);
+    color: #c4b5fd;
+}
+
+.boardgame-panel > label {
+    display: block;
+    margin-bottom: 9px;
+}
+
+.search-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.search-row button {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--primary);
+    color: white;
+    font-weight: 700;
+}
+
+.search-row button:hover {
+    background: var(--primary-hover);
+}
+
+/* ACCIONES Y MENSAJES */
+
+.profile-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 26px;
+}
+
+#save-message {
+    min-height: 18px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+    .site-header {
+        padding: 16px 4%;
+        flex-wrap: wrap;
+    }
+
+    .main-nav {
+        gap: 4px;
+    }
+
+    .main-nav a {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .profile-page {
+        width: 94%;
+        margin-top: 24px;
+    }
+
+    .panel {
+        padding: 18px;
+    }
+
+    .steam-profile {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .steam-avatar {
+        width: 92px;
+        height: 92px;
+    }
+
+    .steam-details h2 {
+        font-size: 24px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .schedule-day {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .section-heading {
+        flex-direction: column;
+    }
+
+    .search-row {
+        flex-direction: column;
+    }
+
+    .search-row button {
+        min-height: 42px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+
+/* Distribución general del perfil */
+.profile-page {
+    width: min(1100px, calc(100% - 40px));
+    margin: 40px auto;
+}
+
+/* Encabezado de la página */
+.page-heading {
+    margin-bottom: 28px;
+}
+
+/* Tarjeta de Steam */
+.steam-profile {
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr);
+    align-items: start;
+    gap: 24px;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 12px;
+    padding: 28px;
+}
+
+.steam-avatar {
+    width: 108px;
+    min-width: 0;
+}
+
+.steam-avatar img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.steam-details {
+    min-width: 0;
+}
+
+.steam-details h2 {
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.steam-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+}
+
+.playing-card {
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+
+/* Evita que los paneles se encojan por el contenido */
+.profile-page .panel {
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.schedule-day {
+    min-width: 0;
+}
+
+.schedule-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+@media (max-width: 650px) {
+    .profile-page {
+        width: calc(100% - 24px);
+        margin: 24px auto;
+    }
+
+    .steam-profile {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .steam-avatar {
+        width: 88px;
+    }
+
+    .schedule-grid {
+        grid-template-columns: 1fr;
+    }
+}

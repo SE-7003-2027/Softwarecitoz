@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi biblioteca | CHAOS</title>
+    <link rel="stylesheet" href="css/perfil.css">
+    <link rel="stylesheet" href="css/biblioteca.css">
+</head>
+<body>
+    <header class="site-header">
+        <a class="logo" href="Log_in.html">CHAOS</a>
+        <nav class="main-nav">
+            <a href="perfil.html">Mi perfil</a>
+            <a href="biblioteca.html" class="active">Biblioteca</a>
+        </nav>
+    </header>
+
+    <main class="library-page">
+        <div class="page-heading">
+            <p class="eyebrow">TU COLECCIÓN</p>
+            <h1>Mi biblioteca</h1>
+            <p>Tus juegos de Steam sincronizados y tus juegos de mesa.</p>
+        </div>
+
+        <!-- CABECERA: vendría de LibraryOut -->
+        <section class="library-summary panel" data-source="steam">
+            <div class="summary-stat">
+                <span class="summary-value" id="game-count">—</span>
+                <span class="summary-label">Juegos en Steam</span>
+            </div>
+            <div class="summary-stat">
+                <span class="summary-value" id="total-playtime">—</span>
+                <span class="summary-label">Horas totales</span>
+            </div>
+            <div class="summary-stat">
+                <span class="summary-value" id="boardgame-count">1</span>
+                <span class="summary-label">Juegos de mesa</span>
+            </div>
+        </section>
+
+        <p class="readonly-note">
+            Los datos de Steam se sincronizan automáticamente. Los juegos de mesa los agregas tú.
+        </p>
+
+        <!-- TABS -->
+        <div class="tab-list" role="tablist" aria-label="Secciones de la biblioteca">
+            <button type="button" class="tab-button active" role="tab"
+                    aria-selected="true" data-tab="steam">Videojuegos</button>
+            <button type="button" class="tab-button" role="tab"
+                    aria-selected="false" data-tab="recent">Recientes</button>
+            <button type="button" class="tab-button" role="tab"
+                    aria-selected="false" data-tab="boardgames">Juegos de mesa</button>
+        </div>
+
+        <!-- ============ PANEL: VIDEOJUEGOS (LibraryOut) ============ -->
+        <section id="panel-steam" class="tab-panel" role="tabpanel">
+            <div class="toolbar">
+                <div class="toolbar-field">
+                    <label for="steam-sort">Ordenar por</label>
+                    <select id="steam-sort">
+                        <option value="playtime">Más jugados</option>
+                        <option value="name">Nombre (A-Z)</option>
+                        <option value="recent">Jugados recientemente</option>
+                    </select>
+                </div>
+                <div class="toolbar-field toolbar-search">
+                    <label for="steam-filter">Buscar</label>
+                    <input id="steam-filter" type="search" placeholder="Ej. Dota, CS...">
+                </div>
+            </div>
+
+            <div id="steam-games" class="games-grid">
+                <!-- Cards generadas por JS. Ejemplo de una: -->
+                <!--
+                <article class="game-card">
+                    <a class="game-cover" href="https://store.steampowered.com/app/570" target="_blank" rel="noopener">
+                        <img src="..." alt="Dota 2">
+                    </a>
+                    <div class="game-body">
+                        <h3 class="game-name">Dota 2</h3>
+                        <p class="game-playtime">100 h jugadas</p>
+                        <p class="game-recent">2 h esta quincena</p>
+                        <p class="game-last">Última vez: hace 3 días</p>
+                        <div class="game-platforms">
+                            <span>Windows</span><span>Linux</span>
+                        </div>
+                    </div>
+                </article>
+                -->
+            </div>
+
+            <button type="button" class="button button-secondary" id="load-more" hidden>
+                Cargar más
+            </button>
+        </section>
+
+        <!-- ============ PANEL: RECIENTES (RecentActivityOut) ============ -->
+        <section id="panel-recent" class="tab-panel" role="tabpanel" hidden>
+            <div class="recent-summary">
+                <div>
+                    <span class="summary-value" id="recent-count">—</span>
+                    <span class="summary-label">Juegos esta quincena</span>
+                </div>
+                <div>
+                    <span class="summary-value" id="recent-playtime">—</span>
+                    <span class="summary-label">Horas totales</span>
+                </div>
+            </div>
+            <div id="recent-games" class="games-grid"></div>
+        </section>
+
+        <!-- ============ PANEL: JUEGOS DE MESA ============ -->
+        <section id="panel-boardgames" class="tab-panel" role="tabpanel" hidden>
+
+            <div class="tab-list tab-list-secondary" role="tablist" aria-label="Estado del juego de mesa">
+                <button type="button" class="tab-button active" role="tab"
+                        aria-selected="true" data-subtab="owned">Los tengo</button>
+                <button type="button" class="tab-button" role="tab"
+                        aria-selected="false" data-subtab="interested">Me interesan</button>
+            </div>
+
+            <!-- Sub-panel: Los tengo -->
+            <div id="panel-owned" class="boardgame-panel" role="tabpanel">
+                <div class="search-row">
+                    <div class="search-field">
+                        <label for="owned-search">Buscar un juego de mesa</label>
+                        <input id="owned-search" type="search"
+                               placeholder="Ej. Catan, UNO, Azul..." autocomplete="off">
+                        <ul id="owned-suggestions" class="suggestions" hidden></ul>
+                    </div>
+                    <button type="button" id="add-owned" class="button button-primary">Agregar</button>
+                </div>
+                <div id="owned-games" class="boardgame-grid">
+                    <!-- Cards generadas por JS -->
+                    <!--
+                    <article class="boardgame-card">
+                        <img src="..." alt="Catan">
+                        <div>
+                            <h4>Catan</h4>
+                            <p>3–4 jugadores · 60–120 min</p>
+                            <span class="game-chip">Los tengo</span>
+                        </div>
+                        <button class="remove-btn" aria-label="Quitar">×</button>
+                    </article>
+                    -->
+                </div>
+                <p class="empty-state" id="owned-empty" hidden>
+                    Aún no has agregado juegos de mesa. Busca uno arriba para empezar.
+                </p>
+            </div>
+
+            <!-- Sub-panel: Me interesan -->
+            <div id="panel-interested" class="boardgame-panel" role="tabpanel" hidden>
+                <div class="search-row">
+                    <div class="search-field">
+                        <label for="interested-search">Buscar un juego que te interese</label>
+                        <input id="interested-search" type="search"
+                               placeholder="Ej. Gloomhaven, Wingspan..." autocomplete="off">
+                        <ul id="interested-suggestions" class="suggestions" hidden></ul>
+                    </div>
+                    <button type="button" id="add-interested" class="button button-primary">Agregar</button>
+                </div>
+                <div id="interested-games" class="boardgame-grid"></div>
+                <p class="empty-state" id="interested-empty" hidden>
+                    Aún no marcas juegos de mesa que te interesen.
+                </p>
+            </div>
+
+            <p class="help-text">
+                Búsqueda y guardado simulados. La API de juegos de mesa (BoardGameGeek) está pendiente.
+            </p>
+        </section>
+    </main>
+
+    <script src="js/biblioteca.js"></script>
+</body>
+</html>

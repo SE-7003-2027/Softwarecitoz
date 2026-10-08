@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi perfil | CHAOS</title>
+    <link rel="stylesheet" href="css/perfil.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <a class="logo" href="Log_in.html">CHAOS</a>
+
+        <nav class="main-nav">
+            <a href="perfil.html" class="active">Mi perfil</a>
+            <a href="biblioteca.html">Biblioteca</a>
+        </nav>
+    </header>
+
+    <main class="profile-page">
+        <div class="page-heading">
+            <div>
+                <p class="eyebrow">TU ESPACIO GAMER</p>
+                <h1>Mi perfil</h1>
+                <p>Personaliza tu perfil y encuentra compañeros para jugar.</p>
+            </div>
+        </div>
+
+        <!-- ZONA A: INFORMACIÓN DE STEAM -->
+        <section class="panel steam-profile" data-source="steam">
+            <div class="steam-avatar">
+                <img
+                    id="steam-avatar"
+                    src="https://placehold.co/120x120/25283b/ffffff?text=PLAYER"
+                    alt="Avatar de Steam de ejemplo"
+                >
+            </div>
+
+            <div class="steam-details">
+                <span class="section-tag">CUENTA DE STEAM</span>
+                <h2 id="steam-name">Jugador de ejemplo</h2>
+                <p id="steam-real-name" class="muted">Nombre real no disponible</p>
+
+                <div class="profile-badges">
+                    <span id="steam-status" class="status-badge status-online">
+                        ● En línea
+                    </span>
+                    <span id="steam-country" class="info-badge">
+                        País no disponible
+                    </span>
+                </div>
+
+                <p class="steam-id">
+                    Steam ID: <span id="steam-id">00000000000000000</span>
+                </p>
+
+                <div class="steam-meta">
+                    <span id="account-age">Antigüedad no disponible</span>
+                    <span id="last-online">Última conexión no disponible</span>
+                </div>
+
+                <a
+                    id="steam-profile-link"
+                    class="button button-steam"
+                    href="https://steamcommunity.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Ver perfil en Steam ↗
+                </a>
+            </div>
+
+            <aside id="currently-playing" class="playing-card" hidden>
+                <span class="section-tag">JUGANDO AHORA</span>
+                <h3 id="current-game-name"></h3>
+                <p>Este usuario está jugando actualmente.</p>
+            </aside>
+        </section>
+
+        <p class="readonly-note">
+            Los datos de Steam son informativos y no se editan desde esta pantalla.
+        </p>
+
+        <!-- ZONA B: INFORMACIÓN EDITABLE -->
+        <form id="profile-form">
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <span class="section-tag">PERSONALIZACIÓN</span>
+                        <h2>Mi información</h2>
+                        <p>Cuéntales a otros jugadores qué te gusta y cuándo puedes jugar.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="username">Nombre de usuario en CHAOS</label>
+                        <input
+                            id="username"
+                            name="username"
+                            type="text"
+                            value="Jugador123"
+                            maxlength="40"
+                            data-source="user"
+                        >
+                    </div>
+
+                    <div class="form-field">
+                        <label for="email">Correo electrónico</label>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            value="jugador123@example.com"
+                            readonly
+                            data-source="user"
+                        >
+                        <small>El correo no se modifica desde el perfil.</small>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="bio">Sobre mí</label>
+                    <textarea
+                        id="bio"
+                        name="bio"
+                        rows="4"
+                        maxlength="500"
+                        placeholder="¿Qué juegos te gustan? ¿Qué buscas en un compañero de equipo?"
+                        data-source="user"
+                    >Me gustan los juegos cooperativos y descubrir nuevos mundos.</textarea>
+                </div>
+            </section>
+
+            <!-- HORARIOS -->
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <span class="section-tag">DISPONIBILIDAD</span>
+                        <h2>¿Cuándo puedes jugar?</h2>
+                        <p>Ajusta los días y las franjas horarias en las que sueles estar disponible.</p>
+                    </div>
+                </div>
+
+                <div class="schedule-day">
+    <label class="schedule-day-name">
+        <input type="checkbox" name="days" value="lunes" checked>
+        Lunes
+    </label>
+
+    <div class="schedule-times">
+        <input type="time" name="lunes-start" value="18:00" step="900"
+               aria-label="Hora de inicio del lunes">
+        <span class="time-separator">a</span>
+        <input type="time" name="lunes-end" value="20:00" step="900"
+               aria-label="Hora de fin del lunes">
+    </div>
+</div>
+
+<div class="schedule-day">
+    <label class="schedule-day-name">
+        <input type="checkbox" name="days" value="martes" checked>
+        Martes
+    </label>
+
+    <div class="schedule-times">
+        <input type="time" name="martes-start" value="18:00" step="900"
+               aria-label="Hora de inicio del martes">
+        <span class="time-separator">a</span>
+        <input type="time" name="martes-end" value="20:00" step="900"
+               aria-label="Hora de fin del martes">
+    </div>
+</div>
+
+<div class="schedule-day">
+    <label class="schedule-day-name">
+        <input type="checkbox" name="days" value="miercoles" checked>
+        Miercoles
+    </label>
+
+    <div class="schedule-times">
+        <input type="time" name="miercoles-start" value="18:00" step="900"
+               aria-label="Hora de inicio del miercoles">
+        <span class="time-separator">a</span>
+        <input type="time" name="miercoles-end" value="20:00" step="900"
+               aria-label="Hora de fin del miercoles">
+    </div>
+</div>
+
+<div class="schedule-day">
+    <label class="schedule-day-name">
+        <input type="checkbox" name="days" value="jueves" checked>
+        Jueves
+    </label>
+
+    <div class="schedule-times">
+        <input type="time" name="jueves-start" value="18:00" step="900"
+               aria-label="Hora de inicio del jueves">
+        <span class="time-separator">a</span>
+        <input type="time" name="jueves-end" value="20:00" step="900"
+               aria-label="Hora de fin del jueves">
+    </div>
+</div>
+
+<div class="schedule-day">
+    <label class="schedule-day-name">
+        <input type="checkbox" name="days" value="viernes" checked>
+        Viernes
+    </label>
+
+    <div class="schedule-times">
+        <input type="time" name="viernes-start" value="18:00" step="900"
+               aria-label="Hora de inicio del viernes">
+        <span class="time-separator">a</span>
+        <input type="time" name="viernes" value="20:00" step="900"
+               aria-label="Hora de fin del viernes">
+    </div>
+</div>
+
+<div class="schedule-day">
+    <label class="schedule-day-name">
+        <input type="checkbox" name="days" value="sabado" checked>
+        Sabado
+    </label>
+
+    <div class="schedule-times">
+        <input type="time" name="sabado" value="18:00" step="900"
+               aria-label="Hora de inicio del sabado">
+        <span class="time-separator">a</span>
+        <input type="time" name="sabado" value="20:00" step="900"
+               aria-label="Hora de fin del sabado">
+    </div>
+</div>
+
+<div class="schedule-day">
+    <label class="schedule-day-name">
+        <input type="checkbox" name="days" value="domingo" checked>
+        Domingo
+    </label>
+
+    <div class="schedule-times">
+        <input type="time" name="domingo" value="18:00" step="900"
+               aria-label="Hora de inicio del domingo">
+        <span class="time-separator">a</span>
+        <input type="time" name="domingo" value="20:00" step="900"
+               aria-label="Hora de fin del domingo">
+    </div>
+</div>
+
+                <p class="help-text">Estas franjas son una representación inicial; sus horas exactas se definirán posteriormente.</p>
+            </section>
+
+            <!-- VIDEOJUEGOS PREFERIDOS -->
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <span class="section-tag">TUS GUSTOS</span>
+                        <h2>Videojuegos preferidos</h2>
+                        <p>Selecciona los juegos que te gustaría usar para encontrar compañeros.</p>
+                    </div>
+                    <a class="text-link" href="biblioteca.html">Ver biblioteca →</a>
+                </div>
+
+                <div id="preferred-games" class="chip-list" data-source="user">
+                    <label class="choice-chip">
+                        <input type="checkbox" name="preferred-games" value="730" checked>
+                        Counter-Strike 2
+                    </label>
+                    <label class="choice-chip">
+                        <input type="checkbox" name="preferred-games" value="570">
+                        Dota 2
+                    </label>
+                    <label class="choice-chip">
+                        <input type="checkbox" name="preferred-games" value="440" checked>
+                        Team Fortress 2
+                    </label>
+                </div>
+
+                <p class="help-text">Juegos de ejemplo. Después podremos cargar las opciones desde la biblioteca de Steam.</p>
+            </section>
+            <!-- VISIBILIDAD -->
+            <section class="panel">
+                <div class="section-heading">
+                    <div>
+                        <span class="section-tag">PRIVACIDAD</span>
+                        <h2>Visibilidad del perfil</h2>
+                        <p>Controla quién puede consultar tu perfil de Steam según las opciones disponibles.</p>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="visibility">Quién puede ver mi perfil</label>
+                    <select id="visibility" name="visibility" data-source="steam">
+                        <option value="private">Privado</option>
+                        <option value="friends_only">Solo amigos</option>
+                        <option value="public" selected>Público</option>
+                    </select>
+                    <small>Por ahora es una representación visual. Cambiar este selector no modifica Steam.</small>
+                </div>
+            </section>
+
+            <div class="profile-actions">
+                <button type="submit" class="button button-primary">Guardar cambios</button>
+                <button type="reset" class="button button-secondary">Restablecer formulario</button>
+            </div>
+
+            <p id="save-message" class="help-text" role="status" aria-live="polite"></p>
+        </form>
+    </main>
+
+    <script src="js/perfil.js"></script>
+</body>
+</html>
