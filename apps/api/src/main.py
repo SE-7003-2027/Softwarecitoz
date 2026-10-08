@@ -9,6 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from src import database, http_client
+from src.auth.router import jwks_router
+from src.auth.router import router as auth_router
 from src.config import get_settings
 from src.exceptions import (
     DomainError,
@@ -17,16 +20,20 @@ from src.exceptions import (
     NotFoundError,
     RateLimitedError,
 )
+from src.log_config import setup_logging
 from src.profiles.router import router as profiles_router
 from src.steam.client import SteamClient
 
-logger = logging.getLogger(__name__)
 settings = get_settings()
+setup_logging(settings.log_level)
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Crea un solo cliente HTTP hacia Steam para toda la app."""
+    """Abre la BD y los clientes HTTP compartidos de la app."""
+    await database.connect()
+    await http_client.start()
     async with httpx.AsyncClient(
         base_url=settings.steam_api_base_url,
         timeout=httpx.Timeout(settings.steam_timeout_seconds),
@@ -34,7 +41,11 @@ async def lifespan(app: FastAPI):
             max_connections=20, max_keepalive_connections=10),
     ) as http:
         app.state.steam_client = SteamClient(http, settings.steam_api_key)
-        yield
+        try:
+            yield
+        finally:
+            await http_client.stop()
+            await database.disconnect()
 
 
 app = FastAPI(
@@ -47,10 +58,13 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
-    allow_methods=["GET"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["*"],
 )
 
+app.include_router(auth_router)
+app.include_router(jwks_router)
 app.include_router(profiles_router)
 
 
@@ -97,6 +111,7 @@ async def http_exception_handler(
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail, "error_code": "http_error"},
+        headers=exc.headers,
     )
 
 

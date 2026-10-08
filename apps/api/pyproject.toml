@@ -3,18 +3,25 @@ name = "chaos-api"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
+    "alembic>=1.20.0",
+    "asyncpg>=0.31.0",
     "fastapi[standard]>=0.140,<0.150",
     "httpx>=0.28,<0.29",
+    "psycopg[binary]>=3.3.6",
     "pydantic>=2.13,<2.14",
     "pydantic-settings>=2.0",
+    "pyjwt[crypto]>=2.15.1",
+    "sqlalchemy>=2.1.1",
     "uvicorn[standard]>=0.30,<0.40",
 ]
 
 [dependency-groups]
 dev = [
+    "freezegun>=1.5.5",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
     "respx>=0.23.1",
+    "testcontainers>=4.15.0",
 ]
 
 [tool.pytest.ini_options]
