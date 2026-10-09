@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     steam_api_base_url: str = "https://api.steampowered.com"
     steam_timeout_seconds: float = 10.0
 
+    BASE_URL: str = "http://localhost:8000"
+    DATABASE_URL: str
+    COOKIE_SECURE: bool = True
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
