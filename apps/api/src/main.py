@@ -130,3 +130,15 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 @app.get("/health", tags=["health"])
 async def health():
     return {"status": "ok"}
+
+
+@app.get("/health/database", tags=["health"])
+async def health_database():
+    async with database.get_pool().acquire() as conn:
+        result = await conn.fetchval("SELECT 1")
+
+    return {
+        "status": "ok",
+        "database": "supabase",
+        "result": result,
+    }

@@ -2,7 +2,7 @@ CREATE TABLE public.players (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
     steamid BIGINT UNIQUE,
-    auth_user_id UUID UNIQUE,
+    auth_user_id BIGINT UNIQUE,
 
     user_name TEXT,
     
@@ -16,6 +16,11 @@ CREATE TABLE public.players (
     steam_level SMALLINT,
 
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    
+    CONSTRAINT fk_players_auth_user
+        FOREIGN KEY (auth_user_id)
+        REFERENCES public.app_users(id)
+        ON DELETE CASCADE
 );
 
 
@@ -24,6 +29,7 @@ CREATE TABLE public.apps (
     appid INTEGER PRIMARY KEY,
 
     name TEXT NOT NULL,
+    icon_url TEXT,
     header_image_url TEXT,
     short_description TEXT,
 
