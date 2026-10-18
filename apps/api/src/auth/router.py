@@ -94,7 +94,11 @@ async def steam_callback(request: Request):
             )
 
     await audit_log("login", user_id=user.id, family_id=family_id)
-    await enqueue_express_ingest(steamid)
+    await enqueue_express_ingest(
+    steamid,
+    user.id,
+    request.app.state.steam_client,
+    )
 
     resp = RedirectResponse(state["next"], status_code=303)
     _clear_state_cookie(resp)
