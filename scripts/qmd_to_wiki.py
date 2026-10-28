@@ -65,7 +65,7 @@ WIKI_STRUCTURE: list[tuple[str, list[tuple[str, str]]]] = [
         ("05-decisiones-tecnicas/index.qmd", "ADRs"),
         ("05-decisiones-tecnicas/0001-eleccion-de-framework.qmd", "ADR-0001-Eleccion-de-framework"),
         ("05-decisiones-tecnicas/0002-eleccion-de-frontend.qmd", "ADR-0002-Eleccion-de-frontend"),
-        ("05-decisiones-tecnicas/0003-elección-de-react-tailwind-vite-para-frontend.qmd", "ADR-0003-Reemplazo-eleccion-de-frontend"),
+        ("05-decisiones-tecnicas/0003-eleccion-de-react-tailwind-vite-para-frontend.qmd", "ADR-0003-Reemplazo-eleccion-de-frontend"),
         ("05-decisiones-tecnicas/rfc-0001-base-de-datos.qmd", "RFC-0001-Base-de-datos"),
     ]),
     ("Changelog", [
