@@ -1,0 +1,34 @@
+---
+title: "Elección de React, Tailwind y Vite para el Desarrollo del Frontend"
+---
+
+* **Estado:** Aprobado
+
+## Contexto
+Para el desarrollo de la app web, se necesita la implementación de una interfaz de usuario (Frontend) encargada de:
+1. Presentar de manera clara e intuitiva los formularios de registro, inicio de sesión y gestión de perfil del jugador.
+2. Visualizar la biblioteca de videojuegos sincronizada desde Steam y los juegos de mesa agregados manualmente.
+3. Mostrar las tarjetas de perfiles sugeridos por el algoritmo de emparejamiento, resaltando juegos en común y franjas horarias.
+4. Consumir la API RESTful expuesta por el Backend en Python para enviar y recibir información en formato JSON.
+
+
+## Decisión
+
+La primer decisión tomada por el equipo de las tecnologias que se utilizarian fueron el conjunto de **HTML, CSS y JavaScript**, pero se tomo una segunda decisión en la que se cambio a React como librería de UI, Tailwind CSS para los estilos y Vite como herramienta de construcción y empaquetado.
+
+La decisión se tomó por:
+
+* **Diseño de pantallas**: Las interfaces ya diseñadas en Figma se pueden traducir de manera más directa a componentes reutilizables de React.
+* **Facilidad de uso de diseños**: Tailwind CSS permite aplicar estilos mediante clases de utilidad directamente en los componentes, agilizando la implementación. 
+* **Conocimiento del equipo**:El integrante encargado del desarrollo de las pantallas del frontend cuenta con el conocimiento de uso de estas herramientas. 
+
+## Consecuencias
+
+* **Consecuencias Positivas:**
+  * Velocidad de maquetación drásticamente mayor gracias a Tailwind CSS.
+  * Integración fluida y rápida durante el desarrollo gracias a la arquitectura de Vite. 
+  * Mayor facilidad con el manejo del estado global de la aplicación. 
+
+* **Consecuencias Negativas:**
+  * Genera una dependencia a un entorno de ejecución de Node.js para compilar el proyecto, a diferencia del enfoque anterior que no requería herramientas de construcción.
+  * Curva de aprendizaje para el resto de los integrantes del equipo que solo dominan la pila web estándar, en caso de ayuda o correcciónes. 
