@@ -26,6 +26,7 @@ def long_function_name(
         var_one, var_two, var_three,
         var_four):
     print(var_one)
+```
 
 ## 2. Longitud máxima de la línea
 
@@ -52,6 +53,7 @@ income = (gross_wages
           + (dividends - qualified_dividends)
           - ira_deduction
           - student_loan_interest)
+```
 
 ## 4. Líneas en blanco
 
@@ -74,6 +76,7 @@ class Calculadora:
 
 def funcion_independiente():
     pass
+```
 
 
 ## 5. Importaciones
@@ -98,6 +101,7 @@ import requests
 from flask import Flask
 
 from mis_modulos import utilidades, modelos
+```
 
 ## 6. Expresiones y declaraciones
 
@@ -132,6 +136,7 @@ def calcular_descuento(precio, porcentaje):
         raise ValueError("El porcentaje debe estar entre 0 y 100")
         
     return precio - (precio * (porcentaje / 100))
+```
 
 
 ## 8.  Convenciones de nombres
@@ -168,7 +173,7 @@ Se escriben en mayúscula y guiones bajo que separan las palabras.
 * Comparaciones se deben de realizar con is o is_not, no con operadores de igualdad. 
 * Siempre que se vaya a comparar con None, siempre usar is o is_not. 
 
-** Ejemplo:**
+**Ejemplo:**
 
 ```python
 # Correct:
@@ -176,10 +181,11 @@ if foo is not None:
 
 # Wrong:
 if not foo is None:
+```
 
 * No comparar valores booleanos con el uso de True y False.
 
-** Ejemplo:**
+**Ejemplo:**
 
 ```python
 # Correct:
@@ -190,4 +196,4 @@ if greeting == True:
 
 # Wrong:
 if greeting is True:
-
+```
