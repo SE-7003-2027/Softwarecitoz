@@ -14,7 +14,7 @@ Para el desarrollo de la app web, se necesita la implementación de una interfaz
 
 ## Decisión
 
-La primer decisión tomada por el equipo de las tecnologias que se utilizarian fueron el conjunto de **HTML, CSS y JavaScript**, pero se tomo una segunda decisión en la que se cambio a React como librería de UI, Tailwind CSS para los estilos y Vite como herramienta de construcción y empaquetado.
+La primer decisión tomada por el equipo de las tecnologias que se utilizarian fueron el conjunto de **HTML, CSS y JavaScript**, pero se tomo una segunda decisión en la que se cambio a React como librería de UI, Tailwind CSS para los estilos y Vite como herramienta de construcción y empaquetado. De igual manera se utilizara react router para enrutar y react context para manejar el estado global.
 
 La decisión se tomó por:
 
@@ -27,7 +27,7 @@ La decisión se tomó por:
 * **Consecuencias Positivas:**
   * Velocidad de maquetación drásticamente mayor gracias a Tailwind CSS.
   * Integración fluida y rápida durante el desarrollo gracias a la arquitectura de Vite. 
-  * Mayor facilidad con el manejo del estado global de la aplicación. 
+  * Mayor facilidad con el manejo del estado global de la aplicación con react context. 
 
 * **Consecuencias Negativas:**
   * Genera una dependencia a un entorno de ejecución de Node.js para compilar el proyecto, a diferencia del enfoque anterior que no requería herramientas de construcción.
