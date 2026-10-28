@@ -15,7 +15,7 @@ flowchart LR
 
 Render de la interfaz, aqui esta toda la la interfaz de usuario. "]:::container
         
-        Backend["Backend (Flask / Python)\n\n CRUD: 
+        Backend["Backend (FastAPI / Python)\n\n CRUD: 
         •Repositorio
         •Gestor de autenticación
         •Motor de emparejamiento
@@ -32,10 +32,10 @@ Render de la interfaz, aqui esta toda la la interfaz de usuario. "]:::container
         Backend -- "API/SQL" --> WebApp
     end
 
-    Steam["Servicio Externo\n(Steam Web API)"]:::external
+    Steam["Servicio Externo\n(Steam Web API / OpenID)"]:::external
 
-    Usuario -- "Crea perfil y\n busca jugadores / HTTPS" --> WebApp
-    Backend -- "Extrae biblioteca\ny perfil / API REST 
+    Usuario -- "Crea perfil, hace login OpenID y \n busca jugadores / HTTPS" --> WebApp
+    Backend -- "Autentica (Callback) y extrae biblioteca \n y perfil / API REST 
     /HTTP /JSON" --> Steam
     
 ```
@@ -48,21 +48,25 @@ sequenceDiagram
     participant WebApp
     participant Backend
     participant DB as DB (Supabase/PostgreSQL)
-    participant Steam as Steam Web API
+    participant Steam as Steam Web API / OpenID
 
-    %% Caso de Uso 1: Vincular Cuenta
-    Usuario->>WebApp: Entra a la webapp y vincula su cuenta de Steam
-    WebApp->>Backend: Hace una llamada POST al endpoint /api/steam/sincronizar
-    Backend->>Steam: Consulta perfil y juegos 
+    %% Caso de Uso 1: Vincular Cuenta con Steam OpenID
+    Usuario->>WebApp: Entra a la webapp y crea su cuenta. 
+    Usuario->>WebApp: vincula su cuenta de Steam
+    WebApp->>Backend: Solicita autenticación (GET /auth/steam/login)
+    Backend->>WebApp: Redirección (302) a Steam OpenID
+    WebApp->>Steam: Usuario ingresa sus credenciales en la página oficial de Steam
+    Steam->>Backend: Redirige de vuelta con los datos de sesión (GET /auth/steam/callback)
+    Backend->>Steam: Consulta perfil y juegos a la API usando el Steam ID
     Steam->>Backend: Devuelve JSON con biblioteca
-    Backend->>DB: Escribe filas en silver.players y silver.player_games
+    Backend->>DB: Escribe filas en public.players y public.players_games
     DB->>Backend: Devuelve confirmación de guardado
-    Backend->>WebApp: 201
+    Backend->>WebApp: Redirige al dashboard con sesión activa
     WebApp->>Usuario: Renderiza la interfaz con la biblioteca cargada
 
     %% Caso de Uso 2: Hacer Match
     Usuario->>WebApp: Clic en "Buscar jugadores"
-    WebApp->>Backend: Hace una llamada GET al endpoint
+    WebApp->>Backend: Hace una llamada GET al endpoint de match
     Backend->>DB: Consultar perfiles compatibles (mismo juego/horario)
     DB->>Backend: Devuelve lista de IDs y datos
     Backend->>WebApp: 201 (Lista JSON)
