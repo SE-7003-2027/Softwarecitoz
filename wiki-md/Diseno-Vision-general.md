@@ -1,32 +1,73 @@
 # Visión general
 
 
-## Diagrama de alto nivel
-
-igual esta hecho con mermaid
+## Diagrama de arquitectura del sistema.
 
 ``` mermaid
 flowchart LR
-    U[Usuario] --> FE[Frontend]
-    FE -->|HTTP / REST| BE[Backend API]
-    BE --> DB[(Base de datos)]
-    BE --> Q[[Cola de trabajos]]
-    Q --> W[Workers]
-    W --> DB
-    BE --> EXT[Servicios externos]
+    
+    Usuario((Usuario)):::actor
+
+    subgraph chaos [Sistema chaos]
+        direction LR
+        WebApp["Web App (Frontend)\n\n•  UI\n• Formularios\n• Componentes
+
+Render de la interfaz, aqui esta toda la la interfaz de usuario. "]:::container
+        
+        Backend["Backend (FastAPI / Python)\n\n CRUD: 
+        •Repositorio
+        •Gestor de autenticación
+        •Motor de emparejamiento
+        •Cliente Steam API
+        
+        Contiene toda la logica 
+        del sistema. "]:::container
+        
+        DB[("DB (Supabase / PostgreSQL)\n\nTablas.\nDatos modelados.")]:::container
+        
+        WebApp -- "API" --> Backend
+        Backend -- "SQL" --> DB
+        DB -- "SQL" --> Backend 
+        Backend -- "API/SQL" --> WebApp
+    end
+
+    Steam["Servicio Externo\n(Steam Web API / OpenID)"]:::external
+
+    Usuario -- "Crea perfil, hace login OpenID y \n busca jugadores / HTTPS" --> WebApp
+    Backend -- "Autentica (Callback) y extrae biblioteca \n y perfil / API REST 
+    /HTTP /JSON" --> Steam
+    
 ```
 
-## Componentes
+## Diagrama de flujo
 
-| Componente         | Responsabilidad                                |
-|--------------------|------------------------------------------------|
-| Frontend           | UI, navegación, estado de sesión               |
-| Backend API        | lógica de negocio, autenticación, orquestación |
-| Cola / Workers     | tareas asíncronas y trabajos programados       |
-| Base de datos      | persistencia                                   |
-| Servicios externos | pagos, correo, etc.                            |
+``` mermaid
+sequenceDiagram
+    actor Usuario
+    participant WebApp
+    participant Backend
+    participant DB as DB (Supabase/PostgreSQL)
+    participant Steam as Steam Web API / OpenID
 
-## Flujo de una petición típica
+    %% Caso de Uso 1: Vincular Cuenta con Steam OpenID
+    Usuario->>WebApp: Entra a la webapp y crea su cuenta. 
+    Usuario->>WebApp: vincula su cuenta de Steam
+    WebApp->>Backend: Solicita autenticación (GET /auth/steam/login)
+    Backend->>WebApp: Redirección (302) a Steam OpenID
+    WebApp->>Steam: Usuario ingresa sus credenciales en la página oficial de Steam
+    Steam->>Backend: Redirige de vuelta con los datos de sesión (GET /auth/steam/callback)
+    Backend->>Steam: Consulta perfil y juegos a la API usando el Steam ID
+    Steam->>Backend: Devuelve JSON con biblioteca
+    Backend->>DB: Escribe filas en public.players y public.players_games
+    DB->>Backend: Devuelve confirmación de guardado
+    Backend->>WebApp: Redirige al dashboard con sesión activa
+    WebApp->>Usuario: Renderiza la interfaz con la biblioteca cargada
 
-Tenemos que describir el flujo de nuestra app, incluso poner como actor
-a las apis externas
+    %% Caso de Uso 2: Hacer Match
+    Usuario->>WebApp: Clic en "Buscar jugadores"
+    WebApp->>Backend: Hace una llamada GET al endpoint de match
+    Backend->>DB: Consultar perfiles compatibles (mismo juego/horario)
+    DB->>Backend: Devuelve lista de IDs y datos
+    Backend->>WebApp: 201 (Lista JSON)
+    WebApp->>Usuario: Renderiza las tarjetas de perfiles sugeridos
+```
