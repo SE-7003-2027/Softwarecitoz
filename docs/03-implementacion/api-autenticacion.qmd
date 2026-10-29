@@ -4,33 +4,126 @@ title: "Autenticación"
 
 ## Esquema
 
-puede ser  JWT Bearer / OAuth2 para steam
+El inicio de sesión es únicamente con **Steam OpenID**: la app nunca ve la
+contraseña del usuario. Después del login, la sesión se maneja con dos tokens
+que viajan en cookies `HttpOnly` (no en el header `Authorization`):
 
-## Obtener un token
+| Cookie | Contenido | Path | SameSite |
+|---|---|---|---|
+| `__Host-oid` | JWT de estado del login (nonce y ruta `next`) | `/` | `lax` |
+| `__Host-at` | Access token: JWT firmado con Ed25519 | `/` | `lax` |
+| `__Secure-rt` | Refresh token opaco (en la base solo se guarda su hash) | `/auth` | `strict` |
+
+La clave pública para verificar los access tokens se publica en
+`GET /.well-known/jwks.json`.
+
+## Iniciar sesión con Steam
+
+El frontend solo tiene que mandar al usuario a `GET /auth/steam/login?next=<ruta>`.
+El backend hace el resto y, al terminar, redirige a `next` con las cookies de
+sesión ya puestas. Si el usuario cancela en Steam, se le redirige a
+`/login?cancelled=1`.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant FE as Frontend
+    participant BE as Backend (cualquier réplica)
+    participant ST as Steam OpenID
+    participant DB as Postgres
+
+    U->>FE: Clic en "Sign in through Steam"
+    FE->>BE: GET /auth/steam/login?next=/matches
+    BE-->>U: 302 a Steam + cookie __Host-oid<br/>(JWT firmado: nonce, next, exp 10 min)
+    U->>ST: Inicia sesión en Steam (credenciales solo ahí)
+    ST-->>U: 302 a /auth/steam/callback?state=...&openid.*=...
+    U->>BE: GET /auth/steam/callback (con cookie __Host-oid)
+    BE->>BE: Verifica cookie de estado, state == nonce
+    BE->>BE: Valida mode, op_endpoint, return_to,<br/>claimed_id == identity, formato, campos firmados
+    BE->>ST: POST check_authentication (mismos parámetros)
+    ST-->>BE: is_valid:true (Steam rechaza nonces reutilizados)
+    BE->>DB: Upsert usuario + crea familia de sesión + guarda hash de rt1
+    BE-->>U: 303 a /matches + cookies __Host-at y __Secure-rt<br/>y borra __Host-oid
+```
+
+El estado del login vive en la cookie firmada y no en memoria, por eso el
+callback puede atenderlo cualquier réplica del backend.
+
+## Usar la sesión
+
+Como el access token va en una cookie, el navegador lo manda solo. Desde el
+frontend basta con incluir credenciales en las peticiones:
+
+```ts
+fetch("/auth/sessions", { credentials: "include" });
+```
+
+Para probar con `curl`, pasa la cookie a mano:
 
 ```bash
-curl -X POST http://localhost:8000/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "password": "..."}'
+curl http://localhost:8000/auth/sessions \
+  -H "Cookie: __Host-at=eyJ..."
 ```
 
-Respuesta:
-
-```json
-{ "access_token": "eyJ...", "expires_in": 3600 }
-```
-
-## Usar el token
-
-```bash
-curl http://localhost:8000/recursos \
-  -H "Authorization: Bearer eyJ..."
-```
+El backend valida el access token sin consultar la base de datos: firma Ed25519,
+`exp`, `aud` y `typ`. Si el access expiró, responde `401` con el código
+`token_expired`.
 
 ## Renovación
-Los tipos de renovacion que manejariamos como ejemplo
 
 | Token | Duración | Cómo se renueva |
 |---|---|---|
-| access | 1 h | con `refresh_token` |
-| refresh | 30 d | re-login |
+| access | 15 min | `POST /auth/refresh` con la cookie `__Secure-rt` |
+| refresh | 7 días sin uso | rota en cada `POST /auth/refresh` |
+| sesión (familia) | 30 días máximo | volver a iniciar sesión con Steam |
+
+Cada refresh token se usa **una sola vez**: al renovar se marca como usado y se
+emite uno nuevo de la misma familia de sesión. Si llega un refresh que ya se usó
+hace más de 20 s, se asume que fue robado y se revoca toda la familia. Esos 20 s
+de margen cubren peticiones simultáneas del mismo navegador.
+
+En el diagrama, `GET /me/matches` es solo un ejemplo de endpoint protegido.
+
+```{mermaid}
+sequenceDiagram
+    autonumber
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Postgres
+
+    Note over FE,DB: Uso normal (stateless)
+    FE->>BE: GET /me/matches (cookie access, vigente)
+    BE->>BE: Verifica firma Ed25519, exp, aud, typ
+    BE-->>FE: 200
+
+    Note over FE,DB: Expira el access (minuto 15)
+    FE->>BE: GET /me/matches
+    BE-->>FE: 401 token_expired
+    FE->>BE: POST /auth/refresh (cookie rt2)
+    BE->>DB: BEGIN, SELECT ... FOR UPDATE (familia F1)
+    BE->>DB: Marca rt2 usado, inserta rt3, COMMIT
+    BE-->>FE: 200 + cookies (access nuevo, rt3)
+    FE->>BE: GET /me/matches (reintento)
+    BE-->>FE: 200
+
+    Note over FE,DB: Un atacante usa una copia vieja de rt2
+    BE->>DB: rt2 ya usado hace más de 20 s, revoca F1, COMMIT
+    BE-->>FE: 401 reauth_required (atacante)
+    Note over FE: El usuario legítimo también tendrá que<br/>volver a iniciar sesión: es el comportamiento buscado
+```
+
+Cuando `POST /auth/refresh` responde `401 reauth_required`, el backend borra las
+cookies y el frontend debe mandar al usuario a iniciar sesión otra vez.
+
+## Cerrar sesión
+
+| Endpoint | Qué hace |
+|---|---|
+| `POST /auth/logout` | revoca la sesión actual y borra las cookies |
+| `POST /auth/logout-all` | revoca todas las sesiones del usuario |
+| `GET /auth/sessions` | lista las sesiones activas |
+| `DELETE /auth/sessions/{family_id}` | revoca una sesión específica |
+
+Los endpoints `POST` y `DELETE` de `/auth` rechazan peticiones con un header
+`Origin` distinto al del frontend (`403`).
