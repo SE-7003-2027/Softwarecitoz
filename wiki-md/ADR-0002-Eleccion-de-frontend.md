@@ -1,7 +1,8 @@
 # ADR 0002: Elección de HTML, CSS y JavaScript para el Desarrollo del Frontend
 
 
-- **Estado:** Aprobado
+- **Estado:** Reemplazado por ADR
+  0003-eleccion-de-react-tailwind-vite-para-frontend
 
 ## Contexto
 
