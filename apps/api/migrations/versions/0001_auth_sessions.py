@@ -30,7 +30,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_app_users")),
-        sa.UniqueConstraint("steam_id", name=op.f("uq_app_users_steam_id")),
+        sa.UniqueConstraint("steam_id", name=op.f("uq_app_users_steaRocky mascota escaleram_id")),
     )
     op.create_table(
         "auth_session_families",

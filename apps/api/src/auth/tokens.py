@@ -70,9 +70,20 @@ def verify_access(token: str) -> dict:
     return _decode(token, ACCESS_AUD, "access")
 
 
-def issue_openid_state(nonce: str, next_path: str) -> str:
+def issue_openid_state(nonce: str, next_path: str, action: str = "login", user_id: int | None = None,) -> str:
+
+    claims = {
+        "typ": "oid_state",
+        "nonce": nonce,
+        "next": next_path,
+        "action": action,
+    }
+
+    if user_id is not None:
+        claims["user_id"] = user_id
+
     return _encode(
-        {"typ": "oid_state", "nonce": nonce, "next": next_path},
+        claims,
         get_auth_settings().OPENID_STATE_TTL,
         STATE_AUD,
     )

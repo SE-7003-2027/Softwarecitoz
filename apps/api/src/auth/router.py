@@ -1,5 +1,8 @@
 import base64
 import secrets
+import asyncpg
+
+
 from uuid import UUID
 
 from cryptography.hazmat.primitives.serialization import (
@@ -7,8 +10,16 @@ from cryptography.hazmat.primitives.serialization import (
     PublicFormat,
     load_pem_public_key,
 )
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse, RedirectResponse
+
+from src.auth.passwords import hash_password, verify_password
+from src.auth.schemas import (
+    AuthUserOut,
+    LoginIn,
+    RegisterIn,
+    SessionOut,
+)
 
 from src.audit.service import audit_log
 from src.auth import service as auth_service
@@ -42,68 +53,415 @@ def _clear_state_cookie(resp: RedirectResponse) -> None:
     )
 
 
+@router.post("/register", status_code=201, response_model=AuthUserOut, dependencies=[Depends(require_same_origin)],)
+async def register(
+    payload: RegisterIn,
+    request: Request,
+    response: Response,
+):
+    email = str(payload.email).strip().lower()
+    hashed = hash_password(payload.password)
+
+    try:
+        async with get_pool().acquire() as conn:
+            async with conn.transaction():
+
+                user = await users_service.create_user_with_email(
+                    conn,
+                    email,
+                    hashed,
+                )
+
+                family_id, refresh = await auth_service.create_family(
+                    conn,
+                    user.id,
+                    request.headers.get("user-agent", ""),
+                )
+
+    except asyncpg.UniqueViolationError:
+        raise HTTPException(
+            409,
+            "Ya existe una cuenta con ese correo",
+        ) from None
+
+    await audit_log(
+        "register",
+        user_id=user.id,
+        family_id=family_id,
+    )
+
+    set_auth_cookies(
+        response,
+        issue_access(
+            user.id,
+            family_id,
+            user.roles,
+        ),
+        refresh,
+    )
+
+    return AuthUserOut(
+        id=user.id,
+        email=user.email,
+        steam_linked=False,
+    )
+
+@router.post(
+    "/login",
+    response_model=AuthUserOut,
+    dependencies=[Depends(require_same_origin)],
+)
+async def email_login(
+    payload: LoginIn,
+    request: Request,
+    response: Response,
+):
+    email = str(payload.email).strip().lower()
+
+    async with get_pool().acquire() as conn:
+        async with conn.transaction():
+
+            result = (
+                await users_service.get_user_with_password_by_email(
+                    conn,
+                    email,
+                )
+            )
+
+            user = result[0] if result else None
+            stored_hash = result[1] if result else None
+
+            if not verify_password(
+                payload.password,
+                stored_hash,
+            ):
+                raise HTTPException(
+                    401,
+                    "Correo o contraseña incorrectos",
+                )
+
+            if user.status != "active":
+                raise HTTPException(
+                    403,
+                    "Cuenta no disponible",
+                )
+
+            family_id, refresh = (
+                await auth_service.create_family(
+                    conn,
+                    user.id,
+                    request.headers.get(
+                        "user-agent",
+                        "",
+                    ),
+                )
+            )
+
+    await audit_log(
+        "login_email",
+        user_id=user.id,
+        family_id=family_id,
+    )
+
+    set_auth_cookies(
+        response,
+        issue_access(
+            user.id,
+            family_id,
+            user.roles,
+        ),
+        refresh,
+    )
+
+    return AuthUserOut(
+        id=user.id,
+        email=user.email,
+        steam_linked=user.steam_id is not None,
+    )
+
 @router.get("/steam/login")
 async def steam_login(next: str | None = None):
     settings = get_settings()
     nonce = secrets.token_urlsafe(32)
-    return_to = f"{settings.BASE_URL}{CALLBACK_PATH}?state={nonce}"
-    resp = RedirectResponse(build_login_url(return_to, settings.BASE_URL), status_code=302)
+
+    return_to = (
+        f"{settings.BASE_URL}"
+        f"{CALLBACK_PATH}?state={nonce}"
+    )
+
+    resp = RedirectResponse(
+        build_login_url(
+            return_to,
+            settings.BASE_URL,
+        ),
+        status_code=302,
+    )
+
     resp.set_cookie(
         STATE_COOKIE,
-        issue_openid_state(nonce, _safe_next(next)),
+        issue_openid_state(
+            nonce,
+            _safe_next(next),
+            action="login",
+        ),
         max_age=get_auth_settings().OPENID_STATE_TTL,
         httponly=True,
         secure=settings.COOKIE_SECURE,
         samesite="lax",
         path="/",
     )
+
+    return resp
+
+@router.get("/steam/link")
+async def steam_link(
+    user: ActiveUserDep,
+    next: str | None = None,
+):
+    settings = get_settings()
+    nonce = secrets.token_urlsafe(32)
+
+    return_to = (
+        f"{settings.BASE_URL}"
+        f"{CALLBACK_PATH}?state={nonce}"
+    )
+
+    resp = RedirectResponse(
+        build_login_url(
+            return_to,
+            settings.BASE_URL,
+        ),
+        status_code=302,
+    )
+
+    resp.set_cookie(
+        STATE_COOKIE,
+        issue_openid_state(
+            nonce,
+            _safe_next(next),
+            action="link",
+            user_id=user.id,
+        ),
+        max_age=get_auth_settings().OPENID_STATE_TTL,
+        httponly=True,
+        secure=settings.COOKIE_SECURE,
+        samesite="lax",
+        path="/",
+    )
+
     return resp
 
 
 @router.get("/steam/callback")
 async def steam_callback(request: Request):
     settings = get_settings()
+
     params = dict(request.query_params)
     url_state = params.get("state", "")
 
+    # 1. Verificar el state firmado
     try:
-        state = verify_openid_state(request.cookies.get(STATE_COOKIE, ""))
+        state = verify_openid_state(
+            request.cookies.get(
+                STATE_COOKIE,
+                "",
+            )
+        )
     except TokenError:
-        raise HTTPException(400, "Login expirado o inválido") from None
-    if not url_state or not secrets.compare_digest(url_state, state["nonce"]):
-        raise HTTPException(400, "Estado de login inválido")
+        raise HTTPException(
+            400,
+            "Login expirado o inválido",
+        ) from None
 
+    # 2. Comprobar que el nonce coincide
+    if (
+        not url_state
+        or not secrets.compare_digest(
+            url_state,
+            state["nonce"],
+        )
+    ):
+        raise HTTPException(
+            400,
+            "Estado de login inválido",
+        )
+
+    # 3. Usuario canceló Steam
     if params.get("openid.mode") == "cancel":
-        resp = RedirectResponse("/login?cancelled=1", status_code=303)
+        resp = RedirectResponse(
+            "/login?cancelled=1",
+            status_code=303,
+        )
+
         _clear_state_cookie(resp)
+
         return resp
 
-    expected_return_to = f"{settings.BASE_URL}{CALLBACK_PATH}?state={url_state}"
-    try:
-        steamid = await verify_callback(params, expected_return_to, get_http_client())
-    except OpenIDError:
-        raise HTTPException(401, "No se pudo verificar el inicio de sesión") from None
-
-    async with get_pool().acquire() as conn:
-        async with conn.transaction():
-            user = await users_service.upsert_user_from_steam(conn, steamid)
-            if user.status != "active":
-                raise HTTPException(403, "Cuenta no disponible")
-            family_id, refresh = await auth_service.create_family(
-                conn, user.id, request.headers.get("user-agent", "")
-            )
-
-    await audit_log("login", user_id=user.id, family_id=family_id)
-    await enqueue_express_ingest(
-    steamid,
-    user.id,
-    request.app.state.steam_client,
+    # 4. Verificar respuesta con Steam
+    expected_return_to = (
+        f"{settings.BASE_URL}"
+        f"{CALLBACK_PATH}?state={url_state}"
     )
 
-    resp = RedirectResponse(state["next"], status_code=303)
-    _clear_state_cookie(resp)
-    set_auth_cookies(resp, issue_access(user.id, family_id, user.roles), refresh)
-    return resp
+    try:
+        steamid = await verify_callback(
+            params,
+            expected_return_to,
+            get_http_client(),
+        )
+
+    except OpenIDError:
+        raise HTTPException(
+            401,
+            "No se pudo verificar el inicio de sesión",
+        ) from None
+
+    # Saber si venimos de LOGIN o LINK
+    action = state.get("action", "login")
+
+    # ========================================
+    # VINCULAR STEAM A UNA CUENTA CHAOS
+    # ========================================
+
+    if action == "link":
+
+        user_id = state.get("user_id")
+
+        if user_id is None:
+            raise HTTPException(
+                400,
+                "No se encontró el usuario a vincular",
+            )
+
+        try:
+            async with get_pool().acquire() as conn:
+
+                async with conn.transaction():
+
+                    user = (
+                        await users_service.link_steam_account(
+                            conn,
+                            int(user_id),
+                            steamid,
+                        )
+                    )
+
+                    if user is None:
+                        raise HTTPException(
+                            404,
+                            "Cuenta de Chaos no encontrada",
+                        )
+
+        except asyncpg.UniqueViolationError:
+            raise HTTPException(
+                409,
+                "Esta cuenta de Steam ya está "
+                "vinculada a otra cuenta de Chaos",
+            ) from None
+
+        # Ahora que Steam está vinculado,
+        # descargamos perfil y biblioteca.
+
+        await enqueue_express_ingest(
+            steamid,
+            user.id,
+            request.app.state.steam_client,
+        )
+
+        await audit_log(
+            "steam_linked",
+            user_id=user.id,
+        )
+
+        resp = RedirectResponse(
+            state["next"],
+            status_code=303,
+        )
+
+        _clear_state_cookie(resp)
+
+        return resp
+
+    # ========================================
+    # LOGIN UTILIZANDO STEAM
+    # ========================================
+
+    if action == "login":
+
+        async with get_pool().acquire() as conn:
+
+            async with conn.transaction():
+
+                user = (
+                    await users_service.get_user_by_steam(
+                        conn,
+                        steamid,
+                    )
+                )
+
+                # Steam está autenticado,
+                # pero no está vinculado a Chaos.
+
+                if user is None:
+                    raise HTTPException(
+                        404,
+                        "No existe una cuenta de Chaos "
+                        "vinculada a esta cuenta de Steam",
+                    )
+
+                if user.status != "active":
+                    raise HTTPException(
+                        403,
+                        "Cuenta no disponible",
+                    )
+
+                family_id, refresh = (
+                    await auth_service.create_family(
+                        conn,
+                        user.id,
+                        request.headers.get(
+                            "user-agent",
+                            "",
+                        ),
+                    )
+                )
+
+        await audit_log(
+            "login_steam",
+            user_id=user.id,
+            family_id=family_id,
+        )
+
+        # Actualizar datos de Steam
+        await enqueue_express_ingest(
+            steamid,
+            user.id,
+            request.app.state.steam_client,
+        )
+
+        resp = RedirectResponse(
+            state["next"],
+            status_code=303,
+        )
+
+        _clear_state_cookie(resp)
+
+        set_auth_cookies(
+            resp,
+            issue_access(
+                user.id,
+                family_id,
+                user.roles,
+            ),
+            refresh,
+        )
+
+        return resp
+
+    raise HTTPException(
+        400,
+        "Acción de Steam inválida",
+    )
 
 
 @router.post("/refresh", dependencies=[Depends(require_same_origin)])
@@ -173,3 +531,18 @@ def jwks():
             }
         )
     return {"keys": keys}
+
+
+@router.get(
+    "/me",
+    response_model=AuthUserOut,
+)
+async def me(user: ActiveUserDep):
+    return AuthUserOut(
+        id=user.id,
+        email=user.email,
+        steam_linked=user.steam_id is not None,
+    )
+
+
+
