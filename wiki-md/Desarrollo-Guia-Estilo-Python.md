@@ -1,0 +1,200 @@
+# Guía de Estilo de Python
+
+
+En este documento se definen los estándares para el código de los
+proyectos en Python. Tomaremos como base PEP 8 - Guía de estilo para el
+código Python.
+
+------------------------------------------------------------------------
+
+## 1. Identación
+
+Se utilizaran 4 espacios por nivel de identación, NO usar tabuladores.
+
+**Ejemplos:**
+
+``` python
+# Incorrecto
+def long_function_name(
+    var_one, var_two, var_three,
+    var_four):
+    print(var_one)
+
+# Correcto
+def long_function_name(
+        var_one, var_two, var_three,
+        var_four):
+    print(var_one)
+```
+
+## 2. Longitud máxima de la línea
+
+- Todas las líneas deben tener un máximo de 79 caracteres.
+- Para bloques de texto que tengan menos restricciones estructurales
+  como los comentarios, la longitud de la línea debe limitarse a 72
+  caracteres.
+
+## 3. Cuando separar una línea cuando se tiene operador binario
+
+Las líneas de código se tienen que romper antes de un operador binario.
+
+**Ejemplos:**
+
+``` python
+# Incorrecto
+income = (gross_wages +
+          taxable_interest +
+          (dividends - qualified_dividends) -
+          ira_deduction -
+          student_loan_interest)
+
+# Correcto
+income = (gross_wages
+          + taxable_interest
+          + (dividends - qualified_dividends)
+          - ira_deduction
+          - student_loan_interest)
+```
+
+## 4. Líneas en blanco
+
+- 2 líneas en blanco antes de definir clases y funciones.
+- 1 línea en blanco antes de definir un método dentro de una clase.
+- Se pueden utilizar líneas en blanco adicionales para separar grupos de
+  funciones relacionadas.
+- Dentro de las funciones se pueden utilizar líneas en blanco con
+  moderación para separar secciones lógicas.
+
+**Ejemplo:**
+
+``` python
+class Calculadora:
+    
+    def sumar(self, a, b):
+        return a + b
+
+    def restar(self, a, b):
+        return a - b
+
+
+def funcion_independiente():
+    pass
+```
+
+## 5. Importaciones
+
+- Deben estar en líneas separadas.
+- Siempre deben estar colocadas en la parte superior del archivo.
+- Se deben de agrupar con la estructura:
+  - 1.  Importaciones de biblioteca estándar (ej. os, sys).
+  - 2.  Importaciones de terceros relacionados (ej. flask, pytest,
+        numpy).
+  - 3.  Solicitud local/importaciones especificas de la biblioteca.
+- Debe tenerse una línea en blanco entre cada grupo de importaciones.
+- Evitar usar importaciones con \*.
+
+**Ejemplo:**
+
+``` python
+# Correcto
+import os
+import sys
+
+import requests
+from flask import Flask
+
+from mis_modulos import utilidades, modelos
+```
+
+## 6. Expresiones y declaraciones
+
+## 7. Comentarios
+
+- Mantener los comentarios actualizados junto con el código.
+- Deben ser claros.
+- Evitar comentarios de 1 línea.
+- Comentarios para documentación:
+  - Se colocan en módulos, clases y funciones públicos.
+  - Se colocan después de la línea de def.
+  - Usar ““”
+  - Describir qué hace la función, argumentos y qué retorna.
+
+**Ejemplo:**
+
+``` python
+def calcular_descuento(precio, porcentaje):
+    """
+    Calcula el precio final después de aplicar un descuento.
+
+    Args:
+        precio (float): El precio original del producto.
+        porcentaje (float): El porcentaje de descuento a aplicar (0-100).
+
+    Returns:
+        float: El precio final con el descuento aplicado.
+    """
+    if porcentaje < 0 or porcentaje > 100:
+        raise ValueError("El porcentaje debe estar entre 0 y 100")
+        
+    return precio - (precio * (porcentaje / 100))
+```
+
+## 8. Convenciones de nombres
+
+### Funciones, variables y métodos
+
+Utiliza snake_case, donde todo esta en minúscula con guiones bajos.
+
+### Varibales internas
+
+Se utiliza un prefijo de guion bajo para indicar uso privado.
+
+### Argumentos de funciones y métodos
+
+Utilizan igual que las variables snake_case. Además se agregan las
+reglas de: - Usar ‘self’ como primer argumento de los métodos de
+instancia. - Usar ‘cls’ como primer argumento de los métodos de clase.
+
+### Paquetes y módulos
+
+Deben ser nombres cortos y en minúsculas.
+
+### Clases y excepciones
+
+Se utiliza la convención de CapWords, donde cada palabra inicia con
+mayúscula y sin espacios.
+
+### Constantes
+
+Se escriben en mayúscula y guiones bajo que separan las palabras.
+
+## 9. Recomendaciones de programación
+
+- Comparaciones se deben de realizar con is o is_not, no con operadores
+  de igualdad.
+- Siempre que se vaya a comparar con None, siempre usar is o is_not.
+
+**Ejemplo:**
+
+``` python
+# Correct:
+if foo is not None:
+
+# Wrong:
+if not foo is None:
+```
+
+- No comparar valores booleanos con el uso de True y False.
+
+**Ejemplo:**
+
+``` python
+# Correct:
+if greeting:
+
+# Wrong:
+if greeting == True:
+
+# Wrong:
+if greeting is True:
+```

@@ -32,7 +32,7 @@
 - [Testing](Desarrollo-Testing)
 - [Troubleshooting](Desarrollo-Troubleshooting)
 - [Cambios wiki](Desarrollo-Wiki)
-- [Desarrollo Guia Estilo Python](Desarrollo-Guia-Estilo-Python)
+- [Guía de estilo de Python](Desarrollo-Guia-Estilo-Python)
 
 ### Decisiones técnicas (ADRs)
 
