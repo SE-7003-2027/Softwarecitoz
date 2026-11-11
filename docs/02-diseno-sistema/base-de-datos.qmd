@@ -4,87 +4,429 @@ title: "Base de datos"
 
 ## Motor
 
+El proyecto utiliza **PostgreSQL mediante Supabase** como sistema gestor de base de datos.
+
+El backend se conecta directamente a PostgreSQL utilizando `asyncpg`. Los cambios en la estructura de la base de datos se gestionan mediante **Alembic**, evitando modificar manualmente el esquema desde Supabase.
 
 ## Modelo de datos
-Lo podemos hacer con mermeid (ejemplo rapido) o dbdiagram.io (es muy bueno)
+
+El modelo busca separar correctamente:
+
+- La autenticación y sesiones de Chaos.
+- El perfil propio del usuario.
+- La información obtenida desde Steam.
+- Los idiomas del jugador.
+- La disponibilidad para jugar.
+- Los intereses y preferencias.
+- La biblioteca de videojuegos.
+- La información general de los juegos.
+- El control de migraciones de la base de datos.
 
 ```{mermaid}
+%%| fig-width: 18
+%%| fig-height: 14
+
+%%{init: {"layout": "elk"}}%%
+
 erDiagram
-    Usuario {
-        int id_usuario PK
-        varchar steam_id
-        varchar url_avatar
-        date fecha_registro
-        varchar horarios_de_juego
-        varchar user_name
+    direction TB
+
+    APP_USERS {
+        bigint id PK
+        text email UK
+        text password_hash
+        text status
+        text[] roles
     }
 
-    Solicitud {
-        int id_solicitud PK
-        int id_usuario_1 FK
-        int id_usuario_2 FK
-        date fecha
-        int estado FK
+    AUTH_SESSION_FAMILIES {
+        uuid id PK
+        bigint user_id FK
+        timestamptz created_at
+        timestamptz last_used_at
+        timestamptz absolute_expires_at
+        timestamptz revoked_at
+        text revoke_reason
+        text user_agent
     }
 
-    Estado {
-        int estado PK
-        varchar estado_solicitud
+    AUTH_REFRESH_TOKENS {
+        bigint id PK
+        uuid family_id FK
+        bigint parent_id FK
+        bytea token_hash UK
+        timestamptz issued_at
+        timestamptz expires_at
+        timestamptz used_at
     }
 
-    Juego {
-        int id_juego PK
-        varchar nombre_juego
-        int tipo_juego FK
+    ALEMBIC_VERSION {
+        varchar version_num PK
     }
 
-    Tipo_juego {
-        int tipo_juego PK
-        varchar Tipo_juego
+    PLAYERS {
+        uuid id PK
+        bigint auth_user_id FK, UK
+        text user_name
+        text bio
+        char(2) country_code
+        text timezone
+        text avatar_url
+        timestamptz created_at
+        timestamptz updated_at
     }
 
-    Usuario_Juego {
-        int id_usuario_juego PK
-        int id_usuario FK
-        int id_juego FK
-        boolean favorito
-        int horas_jugadas
+    STEAM_PROFILES {
+        uuid player_id PK, FK
+        bigint steamid UK
+        text persona_name
+        text profile_url
+        text avatar_url
+        smallint community_visibility
+        char(2) steam_country_code
+        timestamptz account_created_at
+        timestamptz last_synced_at
     }
 
-    %% Relaciones
-    Usuario ||--o{ Usuario_Juego : "tiene"
-    Juego ||--o{ Usuario_Juego : "registrado en"
-    
-    Usuario ||--o{ Solicitud : "envia (usuario 1)"
-    Usuario ||--o{ Solicitud : "recibe (usuario 2)"
-    
-    Estado ||--o{ Solicitud : "define"
-    
-    Tipo_juego ||--o{ Juego : "clasifica a"
+    LANGUAGES {
+        text code PK
+        text name
+    }
+
+    PLAYER_LANGUAGES {
+        uuid player_id PK, FK
+        text language_code PK, FK
+        text level
+    }
+
+    PLAYER_AVAILABILITY {
+        uuid id PK
+        uuid player_id FK
+        smallint day_of_week
+        time start_time
+        time end_time
+    }
+
+    INTERESTS {
+        int id PK
+        text name
+        text category
+    }
+
+    PLAYER_INTERESTS {
+        uuid player_id PK, FK
+        int interest_id PK, FK
+    }
+
+    APPS {
+        int appid PK
+        text name
+        text icon_url
+        text header_image_url
+        text short_description
+        text[] developers
+        text[] publishers
+        date release_date
+        boolean is_free
+        boolean platform_windows
+        boolean platform_mac
+        boolean platform_linux
+        boolean is_multiplayer
+        boolean is_coop
+        boolean is_pvp
+        smallint achievements_total
+        smallint percent_positive
+        int total_reviews
+        text review_label
+        int median_playtime_min
+        timestamptz updated_at
+    }
+
+    PLAYER_GAMES {
+        uuid player_id PK, FK
+        int appid PK, FK
+        boolean favorite
+        int playtime_forever_min
+        int playtime_2weeks_min
+        int playtime_windows_min
+        int playtime_mac_min
+        int playtime_linux_min
+        int playtime_deck_min
+        timestamptz last_played_at
+        date first_seen_on
+        timestamptz updated_at
+    }
+
+    %% Autenticación y sesiones
+    APP_USERS ||--o{ AUTH_SESSION_FAMILIES : "tiene sesiones"
+    AUTH_SESSION_FAMILIES ||--o{ AUTH_REFRESH_TOKENS : "genera tokens"
+
+    %% Cuenta Chaos -> perfil
+    %% La aplicación crea un perfil por cuenta.
+    %% Físicamente la FK UNIQUE está almacenada en PLAYERS.
+    APP_USERS ||--o| PLAYERS : "posee perfil"
+
+    %% Perfil Steam opcional
+    PLAYERS ||--o| STEAM_PROFILES : "puede vincular"
+
+    %% Idiomas
+    LANGUAGES ||--o{ PLAYER_LANGUAGES : "clasifica"
+    PLAYERS ||--o{ PLAYER_LANGUAGES : "habla"
+
+    %% Disponibilidad
+    PLAYERS ||--o{ PLAYER_AVAILABILITY : "define disponibilidad"
+
+    %% Intereses
+    PLAYERS ||--o{ PLAYER_INTERESTS : "tiene"
+    INTERESTS ||--o{ PLAYER_INTERESTS : "clasifica"
+
+    %% Biblioteca de videojuegos
+    PLAYERS ||--o{ PLAYER_GAMES : "posee o ha jugado"
+    APPS ||--o{ PLAYER_GAMES : "aparece en"
+
+    %% ALEMBIC_VERSION queda independiente
 ```
 
 ## Tablas principales
 
 | Tabla | Descripción |
 |---|---|
-| `usuario` | Inforamción de los usarios |
-| `Juego` | Información de los juegos |
-| `Solicitud` | Información sobre el matcheo de jugadores. Se registra la solicitud que se envia. |
+| `app_users` | Contiene las cuentas utilizadas para autenticarse en Chaos mediante correo y contraseña. |
+| `auth_session_families` | Representa las sesiones iniciadas por los usuarios y permite agrupar los refresh tokens pertenecientes a una misma sesión. |
+| `auth_refresh_tokens` | Contiene la información asociada a los refresh tokens utilizados para renovar la autenticación de una sesión. |
+| `players` | Representa el perfil propio del usuario dentro de Chaos. Contiene información proporcionada por el jugador y utilizada por la aplicación. |
+| `steam_profiles` | Contiene exclusivamente la información obtenida de la cuenta Steam vinculada a un jugador. La vinculación con Steam es opcional. |
+| `languages` | Catálogo de idiomas disponibles dentro de Chaos. |
+| `player_languages` | Relaciona jugadores con los idiomas que hablan y, opcionalmente, con su nivel. |
+| `player_availability` | Almacena los intervalos de tiempo en los que cada jugador indica estar disponible para jugar. |
+| `interests` | Catálogo de intereses y preferencias que pueden utilizarse posteriormente para el sistema de emparejamiento. |
+| `player_interests` | Relaciona cada jugador con los intereses que haya seleccionado. |
+| `apps` | Catálogo de videojuegos conocidos por Chaos e información general obtenida de servicios externos. |
+| `player_games` | Relaciona jugadores con los videojuegos de su biblioteca, incluyendo tiempo jugado y actividad reciente. |
+| `alembic_version` | Tabla técnica utilizada por Alembic para registrar qué versión del esquema se encuentra aplicada actualmente. |
 
-<!-- ## Migraciones
-Es un tema que ya se vera despues pero es indispensable para cosas en produccion
+## Autenticación y sesiones
+
+La autenticación se encuentra separada del perfil del jugador.
+
+La tabla `app_users` identifica la cuenta utilizada para acceder a Chaos mediante datos como:
+
+```text
+email
+password_hash
+status
+roles
+```
+
+Las sesiones activas de cada usuario se almacenan mediante `auth_session_families`.
+
+```text
+app_users
+    │
+    ▼
+auth_session_families
+```
+
+Cada familia de sesión puede tener asociados refresh tokens almacenados en `auth_refresh_tokens`.
+
+```text
+auth_session_families
+        │
+        ▼
+auth_refresh_tokens
+```
+
+Estas tablas forman parte del sistema de autenticación mediante JWT, cookies y refresh tokens.
+
+## Separación entre perfil de Chaos y Steam
+
+Uno de los objetivos principales del modelo es evitar mezclar información proporcionada directamente por el usuario con información obtenida desde Steam.
+
+### Datos de Chaos
+
+La tabla `players` almacena información propia del perfil dentro de Chaos:
+
+```text
+user_name
+bio
+country_code
+timezone
+avatar_url
+```
+
+Esta información puede ser proporcionada y posteriormente modificada por el usuario.
+
+### Datos de Steam
+
+La tabla `steam_profiles` almacena exclusivamente información asociada con la cuenta Steam vinculada:
+
+```text
+steamid
+persona_name
+profile_url
+avatar_url
+community_visibility
+steam_country_code
+account_created_at
+last_synced_at
+```
+
+Una sincronización con Steam puede modificar esta información, pero no debe sobrescribir los datos propios almacenados en `players`.
+
+
+## Biblioteca de Steam
+
+La información relacionada con videojuegos se divide principalmente entre `apps` y `player_games`.
+
+`apps` contiene la información general de cada videojuego:
+
+```text
+appid
+name
+icon_url
+header_image_url
+short_description
+developers
+publishers
+release_date
+platformas
+multiplayer
+co-op
+reviews
+etc.
+```
+
+Mientras que `player_games` representa la relación entre un jugador y un juego:
+
+```text
+players
+    │
+    ▼
+player_games
+    │
+    ▼
+apps
+```
+
+De esta manera, un videojuego se almacena una sola vez en `apps`, aunque pertenezca a múltiples jugadores.
+
+`player_games` almacena datos particulares de cada jugador, como:
+
+```text
+favorite
+playtime_forever_min
+playtime_2weeks_min
+playtime_windows_min
+playtime_mac_min
+playtime_linux_min
+playtime_deck_min
+last_played_at
+first_seen_on
+```
+
+Esta información proviene principalmente de la biblioteca y actividad del jugador obtenidas mediante Steam.
+
+## Idiomas
+
+Los idiomas se representan mediante una relación muchos a muchos.
+
+```text
+players
+    │
+    ▼
+player_languages
+    │
+    ▼
+languages
+```
+
+Por ejemplo:
+
+```text
+Jugador A → Español → native
+Jugador A → Inglés  → intermediate
+Jugador B → Español → native
+```
+
+De esta forma, un jugador puede hablar varios idiomas y un mismo idioma puede estar asociado con muchos jugadores.
+
+Los idiomas podrán utilizarse posteriormente como uno de los criterios para calcular compatibilidad entre usuarios.
+
+## Disponibilidad
+
+La disponibilidad del jugador se almacena mediante intervalos independientes en `player_availability`.
+
+Ejemplo:
+
+```text
+player_id | day_of_week | start_time | end_time
+----------|-------------|------------|---------
+Jugador A | 1           | 18:00      | 22:00
+Jugador A | 3           | 18:00      | 22:00
+Jugador A | 6           | 12:00      | 23:00
+```
+
+
+## Intereses
+
+Los intereses también se representan mediante una relación muchos a muchos.
+
+```text
+players
+    │
+    ▼
+player_interests
+    │
+    ▼
+interests
+```
+
+Los intereses pueden dividirse mediante el campo `category`.
+
+Por ejemplo:
+
+```text
+name             | category
+-----------------|-------------
+Cooperativo      | play_style
+Competitivo      | play_style
+Casual           | play_style
+Survival         | genre
+Estrategia       | genre
+RPG              | genre
+Juegos de mesa   | game_type
+```
+
+Esta información podrá utilizarse posteriormente como una de las señales para el motor de emparejamiento.
+
+
+## Migraciones
+
+Las modificaciones estructurales del esquema deben realizarse mediante Alembic.
+
+Para crear una nueva migración:
 
 ```bash
-# crear migración
-npm run migrate:make <nombre>
+cd apps/api
+uv run alembic revision -m "descripcion de la migracion"
+```
 
-# aplicar
-npm run migrate:up
+Para aplicar todas las migraciones pendientes:
 
-# revertir
-npm run migrate:down
-``` -->
+```bash
+uv run alembic upgrade head
+```
 
+Para consultar la versión actualmente aplicada:
 
-<!-- - Las migraciones viven en `apps/api/migrations/`.
-- Nunca editar una migración ya aplicada en un ambiente compartido. -->
+```bash
+uv run alembic current
+```
+
+Para consultar el historial de migraciones:
+
+```bash
+uv run alembic history
+```
+
+No se deben modificar manualmente las tablas en Supabase cuando el cambio corresponde al esquema de la aplicación. La migración de Alembic debe representar y versionar dichos cambios.
