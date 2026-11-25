@@ -27,24 +27,53 @@ async def upsert_player(
             updated_at
         )
         VALUES (
-            $1, $2, $3, $3, $4, $5, $6, $7, $8, now()
+            $1,
+            $2,
+            $3,
+            $3,
+            $4,
+            $5,
+            $6,
+            $7,
+            $8,
+            now()
         )
 
-        ON CONFLICT (steamid)
+        ON CONFLICT (auth_user_id)
         DO UPDATE SET
-            auth_user_id = EXCLUDED.auth_user_id,
-            persona_name = EXCLUDED.persona_name,
-            profile_url = EXCLUDED.profile_url,
-            avatar_url = EXCLUDED.avatar_url,
+
+            steamid =
+                EXCLUDED.steamid,
+
+            user_name =
+                COALESCE(
+                    players.user_name,
+                    EXCLUDED.user_name
+                ),
+
+            persona_name =
+                EXCLUDED.persona_name,
+
+            profile_url =
+                EXCLUDED.profile_url,
+
+            avatar_url =
+                EXCLUDED.avatar_url,
+
             community_visibility =
                 EXCLUDED.community_visibility,
-            country_code = EXCLUDED.country_code,
+
+            country_code =
+                EXCLUDED.country_code,
+
             account_created_at =
                 EXCLUDED.account_created_at,
+
             updated_at = now()
 
         RETURNING id
         """,
+
         int(player.steamid),
         auth_user_id,
         player.personaname,
