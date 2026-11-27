@@ -10,26 +10,65 @@ async def upsert_player(
     conn: asyncpg.Connection,
     auth_user_id: int,
     player: PlayerSummaryRaw,
+    initialize_chaos_profile: bool = False,
 ) -> UUID:
 
-    row = await conn.fetchrow(
+    # players contiene exclusivamente información
+    # perteneciente al perfil de Chaos.
+    #
+    # Una sincronización Steam NO debe modificar:
+    #
+    # user_name
+    # bio
+    # country_code
+    # timezone
+    # avatar_url
+
+    await conn.execute(
         """
         INSERT INTO players (
-            steamid,
             auth_user_id,
-            user_name,
-            persona_name,
-            profile_url,
-            avatar_url,
-            community_visibility,
-            country_code,
-            account_created_at,
+            created_at,
             updated_at
         )
         VALUES (
             $1,
+            now(),
+            now()
+        )
+
+        ON CONFLICT (auth_user_id)
+        DO NOTHING
+        """,
+        auth_user_id,
+    )
+
+    player_id = await conn.fetchval(
+        """
+        SELECT id
+        FROM players
+        WHERE auth_user_id = $1
+        """,
+        auth_user_id,
+    )
+
+    await conn.execute(
+        """
+        INSERT INTO steam_profiles (
+            player_id,
+            steamid,
+            persona_name,
+            profile_url,
+            avatar_url,
+            community_visibility,
+            steam_country_code,
+            account_created_at,
+            last_synced_at
+        )
+
+        VALUES (
+            $1,
             $2,
-            $3,
             $3,
             $4,
             $5,
@@ -39,17 +78,10 @@ async def upsert_player(
             now()
         )
 
-        ON CONFLICT (auth_user_id)
+        ON CONFLICT (player_id)
         DO UPDATE SET
-
             steamid =
                 EXCLUDED.steamid,
-
-            user_name =
-                COALESCE(
-                    players.user_name,
-                    EXCLUDED.user_name
-                ),
 
             persona_name =
                 EXCLUDED.persona_name,
@@ -63,19 +95,18 @@ async def upsert_player(
             community_visibility =
                 EXCLUDED.community_visibility,
 
-            country_code =
-                EXCLUDED.country_code,
+            steam_country_code =
+                EXCLUDED.steam_country_code,
 
             account_created_at =
                 EXCLUDED.account_created_at,
 
-            updated_at = now()
-
-        RETURNING id
+            last_synced_at =
+                now()
         """,
 
+        player_id,
         int(player.steamid),
-        auth_user_id,
         player.personaname,
         player.profileurl,
         player.avatarfull,
@@ -84,7 +115,36 @@ async def upsert_player(
         player.timecreated,
     )
 
-    return row["id"]
+    if initialize_chaos_profile:
+        await conn.execute(
+            """
+            UPDATE players
+            SET
+                user_name = CASE
+                    WHEN user_name IS NULL
+                         OR btrim(user_name) = ''
+                    THEN $2
+                    ELSE user_name
+                END,
+
+                avatar_url = CASE
+                    WHEN avatar_url IS NULL
+                         OR btrim(avatar_url) = ''
+                    THEN $3
+                    ELSE avatar_url
+                END,
+
+                updated_at = now()
+
+            WHERE id = $1
+            """,
+            player_id,
+            player.personaname,
+            player.avatarfull,
+        )
+    
+
+    return player_id
 
 
 async def upsert_apps(

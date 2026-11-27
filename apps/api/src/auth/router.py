@@ -366,6 +366,7 @@ async def steam_callback(request: Request):
             steamid,
             user.id,
             request.app.state.steam_client,
+            initialize_chaos_profile=True,
         )
 
         await audit_log(

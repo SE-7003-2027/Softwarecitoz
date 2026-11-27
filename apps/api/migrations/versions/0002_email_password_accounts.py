@@ -1,6 +1,6 @@
 """add email password accounts
 
-Revision ID: 40f047864c30
+Revision ID: 0002
 Revises: 0001
 Create Date: 2026-11-07 18:18:13.479939
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '40f047864c30'
+revision: str = '0002'
 down_revision: Union[str, Sequence[str], None] = '0001'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

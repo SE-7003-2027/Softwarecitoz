@@ -11,6 +11,7 @@ async def enqueue_express_ingest(
     steamid: str,
     auth_user_id: int,
     steam: SteamClient,
+    initialize_chaos_profile: bool = False,
 ) -> None:
 
     profile = await steam.get_player_summary(steamid)
@@ -31,6 +32,7 @@ async def enqueue_express_ingest(
                 conn,
                 auth_user_id,
                 profile,
+                initialize_chaos_profile=initialize_chaos_profile,
             )
 
             if library.games is not None:
