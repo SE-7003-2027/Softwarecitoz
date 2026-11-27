@@ -2,29 +2,39 @@ from src.database import get_pool
 from src.users.schemas import User
 
 
+
 def _to_user(row) -> User:
     return User(
         id=row["id"],
-        email=row["email"],
-        steam_id=row["steam_id"],
         status=row["status"],
         roles=list(row["roles"]),
+        email=row["email"],
+        steam_id=row["steam_id"],
     )
+
+_USER_SELECT = """
+SELECT
+    u.id,
+    u.status,
+    u.roles,
+    u.email,
+    sp.steamid AS steam_id
+
+FROM app_users AS u
+
+LEFT JOIN players AS p
+    ON p.auth_user_id = u.id
+
+LEFT JOIN steam_profiles AS sp
+    ON sp.player_id = p.id
+"""
 
 
 async def get_user(user_id: int) -> User | None:
     async with get_pool().acquire() as conn:
+
         row = await conn.fetchrow(
-            """
-            SELECT
-                id,
-                email,
-                steam_id,
-                status,
-                roles
-            FROM app_users
-            WHERE id = $1
-            """,
+            _USER_SELECT + " WHERE u.id = $1",
             user_id,
         )
 
@@ -40,15 +50,23 @@ async def get_user_by_steam(
     row = await conn.fetchrow(
         """
         SELECT
-            id,
-            email,
-            steam_id,
-            status,
-            roles
-        FROM app_users
-        WHERE steam_id = $1
-          AND email IS NOT NULL
-          AND password_hash IS NOT NULL
+            u.id,
+            u.email,
+            sp.steamid AS steam_id,
+            u.status,
+            u.roles
+
+        FROM steam_profiles AS sp
+
+        JOIN players AS p
+            ON p.id = sp.player_id
+
+        JOIN app_users AS u
+            ON u.id = p.auth_user_id
+
+        WHERE sp.steamid = $1
+          AND u.email IS NOT NULL
+          AND u.password_hash IS NOT NULL
         """,
         int(steamid),
     )
@@ -61,21 +79,57 @@ async def link_steam_account(
     steamid: str,
 ) -> User | None:
 
-    row = await conn.fetchrow(
+    steam_id = int(steamid)
+
+    # Buscamos la cuenta de Chaos y su perfil.
+    player = await conn.fetchrow(
         """
-        UPDATE app_users
-        SET steam_id = $1
-        WHERE id = $2
-          AND email IS NOT NULL
-          AND password_hash IS NOT NULL
-        RETURNING
-            id,
-            email,
-            steam_id,
-            status,
-            roles
+        SELECT
+            u.id AS user_id,
+            p.id AS player_id
+
+        FROM app_users AS u
+
+        JOIN players AS p
+            ON p.auth_user_id = u.id
+
+        WHERE u.id = $1
+          AND u.email IS NOT NULL
+          AND u.password_hash IS NOT NULL
         """,
-        int(steamid),
+        user_id,
+    )
+
+    if player is None:
+        return None
+
+    # Vinculamos Steam al perfil de Chaos.
+    # steamid es UNIQUE, así que una misma cuenta
+    # de Steam no puede pertenecer a dos jugadores.
+    await conn.execute(
+        """
+        INSERT INTO steam_profiles (
+            player_id,
+            steamid,
+            last_synced_at
+        )
+        VALUES (
+            $1,
+            $2,
+            now()
+        )
+
+        ON CONFLICT (player_id)
+        DO UPDATE SET
+            steamid = EXCLUDED.steamid,
+            last_synced_at = now()
+        """,
+        player["player_id"],
+        steam_id,
+    )
+
+    row = await conn.fetchrow(
+        _USER_SELECT + " WHERE u.id = $1",
         user_id,
     )
 
@@ -97,7 +151,6 @@ async def create_user_with_email(
         RETURNING
             id,
             email,
-            steam_id,
             status,
             roles
         """,
@@ -115,7 +168,13 @@ async def create_user_with_email(
         row["id"],
     )
 
-    return _to_user(row)
+    return User(
+        id=row["id"],
+        status=row["status"],
+        roles=list(row["roles"]),
+        email=row["email"],
+        steam_id=None,
+    )
 
 
 async def get_user_with_password_by_email(
@@ -126,14 +185,22 @@ async def get_user_with_password_by_email(
     row = await conn.fetchrow(
         """
         SELECT
-            id,
-            email,
-            password_hash,
-            steam_id,
-            status,
-            roles
-        FROM app_users
-        WHERE email = $1
+            u.id,
+            u.email,
+            u.password_hash,
+            sp.steamid AS steam_id,
+            u.status,
+            u.roles
+
+        FROM app_users AS u
+
+        LEFT JOIN players AS p
+            ON p.auth_user_id = u.id
+
+        LEFT JOIN steam_profiles AS sp
+            ON sp.player_id = p.id
+
+        WHERE u.email = $1
         """,
         email,
     )

@@ -25,12 +25,6 @@ class AppUser(Base):
         nullable=True,
     )
 
-    steam_id: Mapped[int | None] = mapped_column(
-        BigInteger,
-        unique=True,
-        nullable=True,
-    )
-
     status: Mapped[str] = mapped_column(
         Text,
         server_default="active",

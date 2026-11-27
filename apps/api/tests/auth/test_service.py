@@ -13,6 +13,7 @@ from src import database
 from src.auth.constants import ACCESS_COOKIE, REFRESH_COOKIE
 from src.auth.dependencies import current_active_user
 from src.auth.exceptions import RefreshError
+from src.auth.passwords import hash_password
 from src.auth.service import (
     create_family,
     revoke_all,
@@ -22,7 +23,11 @@ from src.auth.service import (
 )
 from src.auth.tokens import issue_access, verify_access
 from src.config import get_settings
-from src.users.service import upsert_user_from_steam
+from src.users.service import (
+    create_user_with_email,
+    get_user_by_steam,
+    link_steam_account,
+)
 
 ALEMBIC_INI = Path(__file__).resolve().parents[2] / "alembic.ini"
 STEAMID_A = "76561198000000001"
@@ -58,11 +63,42 @@ async def pool(pg_url):
     await database.disconnect()
 
 
-async def login(pool, steamid: str = STEAMID_A):
+async def login(
+    pool,
+    steamid: str = STEAMID_A,
+):
+
     async with pool.acquire() as conn:
+
         async with conn.transaction():
-            user = await upsert_user_from_steam(conn, steamid)
-            family_id, token = await create_family(conn, user.id, "pytest")
+
+            # En los tests simulamos una cuenta Chaos
+            # que ya fue vinculada anteriormente.
+            user = await get_user_by_steam(
+                conn,
+                steamid,
+            )
+
+            if user is None:
+
+                user = await create_user_with_email(
+                    conn,
+                    f"{steamid}@example.com",
+                    hash_password("test-password-123"),
+                )
+
+                user = await link_steam_account(
+                    conn,
+                    user.id,
+                    steamid,
+                )
+
+            family_id, token = await create_family(
+                conn,
+                user.id,
+                "pytest",
+            )
+
     return user, family_id, token
 
 
