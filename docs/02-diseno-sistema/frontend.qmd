@@ -4,31 +4,37 @@ title: "Frontend"
 
 ## Stack
 
-Yo diria que Angular y yo (kaleb) me podria encargar de eso
 | Área | Tecnología |
 |---|---|
-| Framework | nombre |
-| Lenguaje | nombre |
-| Estilos | css o tailwind |
-| Estado global | algo |
-<!-- | Cliente HTTP | _p. ej. fetch / axios_ | -->
+| **Librería de UI** | React |
+| **Herramienta de Build** | Vite |
+| **Estilos** | Tailwind CSS |
+| **Estado global** | React Context |
+| **Enrutamiento** | React Router |
 
 ## Rutas principales
+Estas rutas aún no se encuentran completamente implementadas. Se coloca un supuesto. 
 
-| Ruta | Vista | Auth |
+| Ruta | Vista | Requiere Auth |
 |---|---|---|
-| `/` | Landing | opcional |
-| `/login` | Inicio de sesión | no |
-| `/app/...` | Área privada | sí |
+| `/` | Landing page (Inicio) | No |
+| `/login` | Inicio de sesión y vinculación OAuth (Steam OpenID) | No |
+| `/app/dashboard` | Pantalla principal (Tarjetas de perfiles sugeridos/Matches) | Sí |
+| `/app/profile` | Perfil del usuario, horarios y biblioteca de Steam/Juegos de mesa | Sí |
+| `/app/chat` | Mensajería con usuarios vinculados | Sí |
 
-<!-- ## Estado global
+## Estado global
 
-_Qué se guarda en el store global (sesión, usuario, feature flags) y qué queda como estado local de cada vista._ -->
+Ubicado en el directorio del frontend (`apps/web`):
 
 ## Build
 
 ```bash
+# 1. Instalar dependencias
 npm install
-npm run dev      # desarrollo
-npm run build    # producción
-```
+
+# 2. Levantar servidor de desarrollo
+npm run dev
+
+# 3. Compilar para producción
+npm run build

@@ -6,21 +6,25 @@ title: "Requisitos"
 
 | Herramienta | Versión mínima | Uso |
 |---|---|---|
-| a | `0` | \[frontend / tooling / no se\] |
-| _lenguaje backend_ | `x.y` | servicios / api |
-| Docker + Docker Compose | `24.x` | entorno local |
-| Git | `2.40+` | control de versiones |
+| **Node.js + npm** | 18.x + | Entorno de ejecución para compilar y servir el frontend (Vite/React). |
+| **Python** | 3.10 + | Lenguaje principal del backend (FastAPI). |
+| **uv** | Última | Gestor de paquetes ultrarrápido para dependencias y migraciones de Alembic. |
+| **Git** | 2.40 + | Control de versiones y colaboración. |
+| **Cliente SQL** | (Opcional) | DBeaver, DataGrip o pgAdmin para visualizar Supabase localmente (Puede consultarse directamente de manera web). |
 
 ## Cuentas y accesos
 
-- Acceso al repositorio.
-- Credenciales para servicios externos (si consumimos apis con api keys NO PONERLAS solo mencionar que usamos).
-- Acceso a un gestor de secretos / `.env` de ejemplo.
+- Acceso al repositorio del proyecto en GitHub.
+- Credenciales o invitación al panel del proyecto de **Supabase**.
+- **Variables de entorno (`.env`):** Solicita el archivo `.env` de ejemplo. Este archivo debe contener la URI de PostgreSQL y la **Steam Web API Key** (No se sube el `.env` real al repositorio).
 
 ## Verificación rápida
 
+Ejecuta estos comandos en tu terminal para confirmar que tu entorno está listo:
+
 ```bash
-lenguaje_back --version
-docker --version
+node --version
+npm --version
+python --version
+uv --version
 git --version
-```

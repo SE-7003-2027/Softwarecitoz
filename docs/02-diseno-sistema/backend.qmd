@@ -4,25 +4,32 @@ title: "Backend"
 
 ## Servicios principales
 
-| Servicio | Responsabilidad |
+El backend está construido con **FastAPI (Python)**. Las operaciones asíncronas de base de datos se manejan con `asyncpg` y los cambios estructurales con **Alembic**.
+
+| Servicio / Módulo | Responsabilidad |
 |---|---|
-| Auth | login, tokens, permisos |
-| _Dominio A_ | _..._ |
-| _Dominio B_ | _..._ |
+| **Autenticación (Auth)** | Gestión de login nativo, flujo Steam OpenID (`/auth/steam/login`), y emisión de JWT / Refresh Tokens. |
+| **Perfil y Steam Sync** | CRUD de usuarios (`players`) y conexión HTTP a la **Steam Web API** para extraer bibliotecas y tiempos de juego. |
+| **Motor de Emparejamiento** | Algoritmo que cruza las tablas de `player_availability` (horarios), `player_games` (juegos en común) e `interests`. |
+| **Interacciones** | Lógica de envío/recepción de solicitudes de match y persistencia de chat. |
 
-## Colas y trabajos asíncronos
+## Trabajos sincronicos y asincronicos 
 
-| Cola | Productor | Consumidor | Ejemplo de tarea |
-|---|---|---|---|
-| `emails` | API | worker | envío de correos |
-| `reports` | API / cron | worker | generación de reportes |
+| Proceso | Origen | Descripción |
+|---|---|---|
+| **Sincronización de Steam** | API (Background Task) | Tras vincular la cuenta, extrae en segundo plano los logros y biblioteca para no bloquear la respuesta HTTP al frontend. |
+| **Cálculo de Matches** | API | Evaluación de compatibilidad de perfiles ejecutada al solicitar sugerencias en el dashboard. |
 
-## Ejecución
+## Ejecución local
+
+Ubicado en el directorio del backend (ej. `apps/api`):
 
 ```bash
-# desarrollo
-npm run dev
+# 1. Sincronizar dependencias usando uv
+uv sync
 
-# workers
-npm run worker
-```
+# 2. Levantar el servidor de desarrollo (FastAPI)
+uv run fastapi dev src/main.py  # (Ajustar ruta si el entrypoint es distinto)
+
+# 3. Correr migraciones pendientes localmente
+uv run alembic upgrade head
